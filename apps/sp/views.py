@@ -58,14 +58,14 @@ def metadata(request):
 
 
 @csrf_exempt
-@render_to('realme/acs.html')
+@render_to('sp/error.html')
 def assertion_consumer_service(request):
     if request.method == 'POST':
         req = prepare_django_request(request)
         auth = init_saml_auth(req)
         auth.process_response()
-        errors = auth.get_errors()
-        if not errors:
+        error = auth.get_last_error_reason()
+        if not error:
             request.session['samlUserdata'] = auth.get_attributes()
             request.session['samlNameId'] = auth.get_nameid()
             request.session['samlSessionIndex'] = auth.get_session_index()
@@ -82,5 +82,5 @@ def assertion_consumer_service(request):
         return http.HttpResponseBadRequest()
 
     return {
-        'errors': errors,
+        'error': error,
     }

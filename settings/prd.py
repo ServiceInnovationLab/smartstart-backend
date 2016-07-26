@@ -2,7 +2,7 @@ from .base import *  # noqa
 
 DEBUG = False
 
-AUTH_METHOD = 'prd'  # fake, mts, its, prd
+IDP = 'PRD'  # fake, MTS, ITS, PRD
 
 ALLOWED_HOSTS = ['dev.boac.lef']  # TODO
 
@@ -13,4 +13,3 @@ try:
     from .local import *
 except ImportError:
     pass
-

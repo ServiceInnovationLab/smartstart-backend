@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets
 from django.contrib.auth.views import login as auth_login
 from apps.sp.views import login as sp_login
+import logging
+log = logging.getLogger(__name__)
 
 
 # Serializers define the API representation.
@@ -19,8 +21,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 def login_router(request):
-    auth_method = getattr(settings, 'AUTH_METHOD', 'fake')
-    if auth_method == 'fake':
-        return auth_login(request)
-    elif auth_method == 'sp':
+    IDP = getattr(settings, 'IDP', 'FAKE').upper()
+    log.info('current IDP: {}'.format(IDP))
+    if IDP in ('MTS', 'ITS', 'PRD'):
         return sp_login(request)
+    else:
+        return auth_login(request)

@@ -1,7 +1,9 @@
-# path to saml files
-SAML_FOLDER = '/home/joeg/lef/realme/MTS'
+# root path to bundle files, there should be bundle dirs named MTS, ITS, PRD in it
+BUNDLES_ROOT = '/home/joeg/lef/realme'
 
-AUTH_METHOD = 'prd'  # fake, mts, its, prd
+SITE_URL = 'https://joeg.dev.boac.lef'
+
+IDP = 'MTS'  # FAKE, MTS, ITS, PRD
 
 DATABASES = {
     'default': {

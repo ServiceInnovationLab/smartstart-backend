@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
-from django.contrib.auth.views import logout
 from django.views.generic import RedirectView
 
 from rest_framework import routers
@@ -25,8 +24,8 @@ router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
 
 urlpatterns = [
-    url(r'^login/$', accounts_views.login_router, name='login'),
-    url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
+    url(r'', include('apps.accounts.urls')),
+    url(r'', include('apps.accounts.urls', namespace='rest_framework')),
     url(r'^sp/', include('apps.sp.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),

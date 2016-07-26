@@ -1,0 +1,9 @@
+django
+django-extensions
+django-annoying
+djangorestframework
+python-dateutil
+pytz
+python3-saml
+path.py
+ipython

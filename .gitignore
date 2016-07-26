@@ -1,0 +1,10 @@
+*.log
+*.pyc
+*.pid
+*~
+local.py
+which.py
+log/
+tmp/
+*.sqlite3
+*.db

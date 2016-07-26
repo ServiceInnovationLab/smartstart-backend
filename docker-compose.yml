@@ -1,0 +1,11 @@
+version: '2'
+services:
+  dj:
+    build: .
+    command: bash run.sh
+    volumes:
+      - .:/opt
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"

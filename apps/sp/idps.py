@@ -84,10 +84,10 @@ class IDP(object):
                     "url": "https://mts.realme.govt.nz/logon-mts/mtsEntryPoint",
                     "binding": constants.BINDING_HTTP_REDIRECT,
                 },
-                "singleLogoutService": {
-                    "url": "",
-                    "binding": constants.BINDING_HTTP_REDIRECT,
-                },
+                # "singleLogoutService": {
+                #     "url": "",
+                #     "binding": constants.BINDING_HTTP_REDIRECT,
+                # },
                 "x509cert": self.bundle_text(self.idp_cer_filename),
             }
         }

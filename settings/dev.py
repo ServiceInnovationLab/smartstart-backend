@@ -8,7 +8,7 @@ SITE_URL = 'http://127.0.0.1:8000'
 
 ALLOWED_HOSTS = ['*']
 
-IDP = 'MTS'  # FAKE, MTS, ITS, PRD
+IDP = 'FAKE'  # FAKE, MTS, ITS, PRD
 
 DATABASES = {
     'default': {

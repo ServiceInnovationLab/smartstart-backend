@@ -115,3 +115,6 @@ LOGGING = {
         },
     },
 }
+
+
+BUNDLES_ROOT = BASE_DIR / 'bundles'

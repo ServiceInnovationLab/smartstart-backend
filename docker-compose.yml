@@ -1,7 +1,7 @@
 version: '2'
 services:
   dj:
-    build: .
+    build: ./env
     command: bash run.sh
     volumes:
       - .:/opt

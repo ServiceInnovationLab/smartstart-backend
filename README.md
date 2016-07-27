@@ -67,3 +67,29 @@ Then you can visit site at:
 
     # TODO: how are we going to deploy dev site?
     http://127.0.0.1:8000
+
+## Run site in docker
+
+Install docker:
+
+    https://docs.docker.com/engine/installation/linux/ubuntulinux/
+
+Install docker-compose:
+
+    sudo pip install -U docker-compose
+
+Build docker image:
+
+    docker-compose build
+
+Load the admin user in fixtures(optional):
+
+    docker-compose run dj python manage.py loaddata test_users
+
+Run the site:
+
+    docker-compose up
+
+Then you can visit site at:
+
+    http://127.0.0.1:8000

@@ -4,15 +4,33 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$24000$h6ToyiVrKaeC$4i1HiOT9uiJDjU1Xy1N2Em6PHz7a5Gt3v2c78ztDhIw=",
-        "last_login": "2016-07-19T21:25:52.445Z",
+        "last_login": "2016-07-27T22:13:44.797Z",
         "is_superuser": true,
         "username": "admin",
-        "first_name": "",
-        "last_name": "",
-        "email": "foo@bar.co.nz",
+        "first_name": "Admin",
+        "last_name": "Boac",
+        "email": "boacuser+admin@catalyst.net.nz",
         "is_staff": true,
         "is_active": true,
         "date_joined": "2016-07-19T04:57:29.913Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$24000$tRk6ASDHneGf$6fr14WArjyDcXtsQNbX1f2mfoECqfhHyjezUTrE21ss=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "test",
+        "first_name": "Test",
+        "last_name": "Boac",
+        "email": "boacuser+test@catalyst.net.nz",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2016-07-27T22:14:52.925Z",
         "groups": [],
         "user_permissions": []
     }

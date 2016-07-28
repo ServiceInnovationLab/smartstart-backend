@@ -1,9 +1,7 @@
-import sys
 from os.path import dirname, abspath
 from path import path
 
 BASE_DIR = path(dirname(dirname(abspath(__file__))))
-# sys.path.insert(0, BASE_DIR / 'apps')  # noqa
 
 USE_I18N = True
 
@@ -16,6 +14,8 @@ USE_TZ = True
 TIME_ZONE = 'Pacific/Auckland'
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'static'
 
 ROOT_URLCONF = 'urls'
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # above all except SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

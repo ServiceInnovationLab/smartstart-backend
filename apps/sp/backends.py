@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 
 class SamlBackend(object):
 
-    def authenticate(self, saml_auth=None):
-        username = saml_auth.get_nameid()
+    def authenticate(self, saml2_auth=None):
+        username = saml2_auth.get_nameid()
+        # TODO: save attrs to user
+        # attrs = auth.get_attributes()
         user, _ = User.objects.get_or_create(username=username)
         return user
 

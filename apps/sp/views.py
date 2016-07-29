@@ -10,14 +10,25 @@ from django import http
 from annoying.decorators import render_to
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
-# from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from .idps import get_idp
 
 log = logging.getLogger(__name__)
+_saml2_settings = None
 
 
-IDP = get_idp(settings.IDP)
+def get_saml2_settings():
+    global _saml2_settings
+    if not _saml2_settings:
+        IDP = get_idp(settings.IDP)
+        _saml2_settings = OneLogin_Saml2_Settings(
+            settings=IDP.get_settings(),
+            sp_validation_only=True,
+        )
+    return _saml2_settings
 
 
 def prepare_django_request(request):
@@ -34,25 +45,21 @@ def prepare_django_request(request):
     }
 
 
-def init_saml_auth(request):
+def init_saml2_auth(request):
     req = prepare_django_request(request)
-    return OneLogin_Saml2_Auth(req, IDP.get_settings())
+    return OneLogin_Saml2_Auth(req, get_saml2_settings())
 
 
 def login(request):
-    auth = init_saml_auth(request)
+    auth = init_saml2_auth(request)
     url = auth.login()
     log.info('sp login url: {}'.format(url))
     return redirect(url)
 
 
 def metadata(request):
-    # req = prepare_django_request(request)
-    # auth = init_saml_auth(req)
-    # saml_settings = auth.get_settings()
-    saml_settings = OneLogin_Saml2_Settings(settings=IDP.get_settings(), sp_validation_only=True)
-    metadata = saml_settings.get_sp_metadata()
-    errors = saml_settings.validate_metadata(metadata)
+    metadata = get_saml2_settings().get_sp_metadata()
+    errors = get_saml2_settings().validate_metadata(metadata)
 
     if errors:
         return http.HttpResponseServerError(content=', '.join(errors))
@@ -63,26 +70,33 @@ def metadata(request):
 @csrf_exempt
 @render_to('sp/error.html')
 def assertion_consumer_service(request):
-    if request.method == 'POST':
-        auth = init_saml_auth(request)
-        auth.process_response()
-        error = auth.get_last_error_reason()
-        if not error:
-            request.session['samlUserdata'] = auth.get_attributes()
-            request.session['samlNameId'] = auth.get_nameid()
-            request.session['samlSessionIndex'] = auth.get_session_index()
-            if auth.is_authenticated():
-                user = authenticate(saml_auth=auth)
-                if user is not None:
-                    if user.is_active:
-                        auth_login(request, user)
-                        return redirect('/')
-                # TODO: redirect to RelayState?
-                # if 'RelayState' in req['post_data'] and OneLogin_Saml2_Utils.get_self_url(req) != req['post_data']['RelayState']:
-                #     return redirect(auth.redirect_to(req['post_data']['RelayState']))
-    else:
+    if request.method != 'POST':
         return http.HttpResponseBadRequest()
 
-    return {
-        'error': error,
-    }
+    auth = init_saml2_auth(request)
+    saml2_response = OneLogin_Saml2_Response(
+        get_saml2_settings(),
+        request.POST['SAMLResponse'],
+    )
+    status = OneLogin_Saml2_Utils.get_status(saml2_response.document)
+    # status example: {code: FOO, msg: BAR}
+    code = status.get('code')
+    if code != OneLogin_Saml2_Constants.STATUS_SUCCESS:
+        log.error('saml response status: {}'.format(status))
+        return status
+
+    auth.process_response()
+    error_reason = auth.get_last_error_reason()
+    if error_reason:
+        return {'code': 'ERROR', 'msg': error_reason}
+
+    if not auth.is_authenticated():
+        return {'code': 'NOTAUTHENTICATED', 'msg': 'NOT AUTHENTICATED'}
+
+    user = authenticate(saml2_auth=auth)
+    if user is not None:
+        if user.is_active:
+            auth_login(request, user)
+            return redirect('/')
+
+    return {'code': 'ERROR', 'msg': 'ACS Failed'}

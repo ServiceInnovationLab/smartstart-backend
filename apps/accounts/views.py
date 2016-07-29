@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
 def login_router(request):
     IDP = getattr(settings, 'IDP', 'FAKE').upper()
     log.info('current IDP: {}'.format(IDP))
-    if IDP in ('MTS', 'ITS', 'PRD'):
+    if IDP in ('MTS', 'ITE', 'PRD'):
         return sp_login(request)
     else:
         return auth_login(request)

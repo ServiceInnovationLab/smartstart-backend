@@ -100,7 +100,7 @@ class MTS(IDP):
     idp_cer_filename = 'mts_login_saml_idp.cer'
 
 
-class ITS(IDP):
+class ITE(IDP):
     # TODO
     sp_entity_id = 'https://its.dev.boac.lef/sp/login'
     sp_cer_filename = 'its_saml_sp.cer'
@@ -121,8 +121,8 @@ def get_idp(name):
     name = name.upper()
     if name == 'PRD':
         return PRD()
-    elif name == 'ITS':
-        return ITS()
+    elif name == 'ITE':
+        return ITE()
     elif name == 'MTS':
         return MTS()
     else:

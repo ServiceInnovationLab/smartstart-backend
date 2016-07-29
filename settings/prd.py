@@ -4,7 +4,7 @@ DEBUG = False
 
 SESSION_COOKIE_SECURE = True
 
-IDP = 'PRD'  # fake, MTS, ITS, PRD
+IDP = 'PRD'  # fake, MTS, ITE, PRD
 
 ALLOWED_HOSTS = ['*.dev.boac.lef']  # TODO
 

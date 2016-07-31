@@ -243,6 +243,10 @@
     .login .module .wrapper {
       min-height: 290px;
     }
+    .login .errorlist li {
+      color: red;
+      list-style-type: none;
+    }
     .btn-primary:hover, .btn-primary.hover, .btn-primary:focus {
       background-color: #3369a4;
       background: linear-gradient(to bottom, #2f5f93 0%,#3369a4 100%);
@@ -329,13 +333,18 @@
 
               <!-- USERNAME -->
               <div class="inner-login">
+
+                {{ form.non_field_errors }}
+
                 <div class="control-group">
 
                   <div class="control-group "><label class="control-label big" for="logon:username:input" id="logon:username:label">Username</label>
 
-                    <div class="controls"><input type="text" tabindex="1" maxlength="64" aria-describedby="usernameHelp" class="full_width get_focus valid" autocomplete="off" name="username" id="id_username">
-
+                    <div class="controls">
+                      {{ form.username.errors }}
+                      <input type="text" tabindex="1" maxlength="64" aria-describedby="usernameHelp" class="full_width get_focus valid" autocomplete="off" name="username" id="id_username">
                     </div>
+
                   </div>
                 </div>
 
@@ -343,7 +352,9 @@
 
                 <div class="control-group "><label class="control-label big" for="logon:userPassword:input">Password</label>
 
-                  <div class="controls"><input type="password" class="full_width " tabindex="2" maxlength="72" value="" autocomplete="off" name="password" id="id_password">
+                  <div class="controls">
+                  {{ form.password.errors }}
+                  <input type="password" class="full_width " tabindex="2" maxlength="72" value="" autocomplete="off" name="password" id="id_password">
                   </div>
                 </div>
 

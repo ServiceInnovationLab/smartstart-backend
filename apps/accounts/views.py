@@ -32,6 +32,11 @@ def login_router(request):
     IDP = getattr(settings, 'IDP', 'FAKE').upper()
     log.info('current IDP: {}'.format(IDP))
     if IDP in ('MTS', 'ITE', 'PRD'):
-        return sp_login(request)
+        response = sp_login(request)
     else:
-        return auth_login(request)
+        response = auth_login(request)
+        response.set_signed_cookie(
+            'is_authenticated',
+            request.user.is_authenticated(),
+        )
+    return response

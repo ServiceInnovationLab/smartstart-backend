@@ -97,6 +97,11 @@ def assertion_consumer_service(request):
     if user is not None:
         if user.is_active:
             auth_login(request, user)
-            return redirect('/')
+            response = http.HttpResponseRedirect('/')
+            response.set_signed_cookie(
+                'is_authenticated',
+                user.is_authenticated(),
+            )
+            return response
 
     return {'code': 'ERROR', 'msg': 'ACS Failed'}

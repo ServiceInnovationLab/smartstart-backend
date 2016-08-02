@@ -1,5 +1,5 @@
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
-from utils import full_reverse
+from utils import full_reverse, get_cer_body, get_private_key_body
 from path import path
 from django.conf import settings
 
@@ -42,10 +42,31 @@ class IDP(object):
 
         e.g.: bundle('mts_saml_sp.cer') --> cert content as text
         """
-        return self.bundle_file(filename).text()
+        return self.bundle_file(filename).text().strip()
+
+    @property
+    def entity_id(self):
+        # Just use full login url as entity id.
+        # realme does not allow entity id ends with slash
+        return full_reverse('sp_login').strip('/')
+
+    @property
+    def acs_url(self):
+        return full_reverse('sp_acs')
+
+    @property
+    def sp_cer(self):
+        return get_cer_body(self.bundle_text(self.sp_cer_filename))
+
+    @property
+    def idp_cer(self):
+        return get_cer_body(self.bundle_text(self.idp_cer_filename))
+
+    @property
+    def sp_key(self):
+        return get_private_key_body(self.bundle_text(self.sp_key_filename))
 
     def get_settings(self):
-        assert self.sp_entity_id, 'must specify sp entityId'
         return {
             "strict": True,
             "debug": self.debug,
@@ -65,9 +86,9 @@ class IDP(object):
                 "signatureAlgorithm": constants.RSA_SHA1,
             },
             "sp": {
-                "entityId": self.sp_entity_id,
+                "entityId": self.entity_id,
                 "assertionConsumerService": {
-                    "url": full_reverse('sp_acs'),
+                    "url": self.acs_url,
                     "binding": constants.BINDING_HTTP_POST,
                 },
                 # "singleLogoutService": {
@@ -75,8 +96,8 @@ class IDP(object):
                 #     "binding": constants.BINDING_HTTP_REDIRECT,
                 # },
                 "NameIDFormat": constants.NAMEID_UNSPECIFIED,
-                "x509cert": self.bundle_text(self.sp_cer_filename),
-                "privateKey": self.bundle_text(self.sp_key_filename),
+                "x509cert": self.sp_cer,
+                "privateKey": self.sp_key,
             },
             "idp": {
                 "entityId": "https://mts.realme.govt.nz/saml2",
@@ -88,13 +109,12 @@ class IDP(object):
                 #     "url": "",
                 #     "binding": constants.BINDING_HTTP_REDIRECT,
                 # },
-                "x509cert": self.bundle_text(self.idp_cer_filename),
+                "x509cert": self.idp_cer,
             }
         }
 
 
 class MTS(IDP):
-    sp_entity_id = 'https://mts.dev.boac.lef/sp/login'
     sp_cer_filename = 'mts_saml_sp.cer'
     sp_key_filename = 'mts_saml_sp.key'
     idp_cer_filename = 'mts_login_saml_idp.cer'
@@ -102,7 +122,6 @@ class MTS(IDP):
 
 class ITE(IDP):
     # TODO
-    sp_entity_id = 'https://its.dev.boac.lef/sp/login'
     sp_cer_filename = 'its_saml_sp.cer'
     sp_key_filename = 'its_saml_sp.key'
     idp_cer_filename = 'its_login_saml_idp.cer'
@@ -111,19 +130,13 @@ class ITE(IDP):
 class PRD(IDP):
     # TODO
     debug = False
-    sp_entity_id = 'https://boac.lef/sp/login'
     sp_cer_filename = 'prd_saml_sp.cer'
     sp_key_filename = 'prd_saml_sp.key'
     idp_cer_filename = 'prd_login_saml_idp.cer'
 
 
+IDPS = {cls.__name__: cls() for cls in (MTS, ITE, PRD)}
+
+
 def get_idp(name):
-    name = name.upper()
-    if name == 'PRD':
-        return PRD()
-    elif name == 'ITE':
-        return ITE()
-    elif name == 'MTS':
-        return MTS()
-    else:
-        return None
+    return IDPS.get(name.upper())

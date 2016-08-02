@@ -118,4 +118,4 @@ LOGGING = {
 }
 
 
-BUNDLES_ROOT = BASE_DIR / 'bundles'
+BUNDLES_ROOT = BASE_DIR.parent / 'bundles'

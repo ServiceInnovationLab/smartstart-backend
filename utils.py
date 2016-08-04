@@ -3,9 +3,9 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 
-def full_reverse(*args, **kwargs):
+def full_reverse(*args, site_url=None, **kwargs):
     """Reverse to a full url"""
-    return settings.SITE_URL.rstrip('/') + reverse(*args, **kwargs)
+    return (site_url or settings.SITE_URL).rstrip('/') + reverse(*args, **kwargs)
 
 
 def get_text_body(key, begin='', end=''):

@@ -13,12 +13,6 @@ class AuthnContextClassRef(object):
 
 
 class IDP(object):
-    # default to True, only PRD needs to be False
-    debug = True
-
-    # Override in subclasses, does not need to be a real url
-    # example: https://mts.dev.boac.lef/sp/login
-    sp_entity_id = ''
 
     def __init__(self, *args, **kwargs):
         """
@@ -69,7 +63,7 @@ class IDP(object):
     def get_settings(self):
         return {
             "strict": True,
-            "debug": self.debug,
+            "debug": settings.DEBUG,
             "security": {
                 "nameIdEncrypted": False,
                 "authnRequestsSigned": True,
@@ -129,7 +123,6 @@ class ITE(IDP):
 
 class PRD(IDP):
     # TODO
-    debug = False
     sp_cer_filename = 'prd_saml_sp.cer'
     sp_key_filename = 'prd_saml_sp.key'
     idp_cer_filename = 'prd_login_saml_idp.cer'

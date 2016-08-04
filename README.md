@@ -18,10 +18,6 @@ Bootstrap the system for system-wide dependencies:
 
     sudo env/bootstrap.sh
 
-Install postgres and make sure the database exsits:
-
-    # TODO: same server or not?
-
 Create a python3 virtualenv in a dir you like, I will use ~/env in this doc:
 
     mkdir ~/env
@@ -43,6 +39,9 @@ Set up settings:
 
     cp local.py.example local.py
     vim local.py
+
+The default db is sqlite, for which you don't need any setup.
+But if you want to use PostgreSQL, you may need to install it and override the db settings in local.py.
 
 Create or update database tables:
 

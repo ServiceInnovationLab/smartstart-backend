@@ -1,9 +1,10 @@
 # root path to bundle files, there should be bundle dirs named MTS, ITE, PRD in it
-BUNDLES_ROOT = '/home/joeg/lef/realme'
+BUNDLES_ROOT = '/home/joeg/lef/ops/files/bundles'
 
 SITE_URL = 'https://joeg.dev.boac.lef'
 
 IDP = 'MTS'  # FAKE, MTS, ITE, PRD
+SP = 'localhost'  # localhost, user-dev, mts-test, uat, testing, prd
 
 DATABASES = {
     'default': {

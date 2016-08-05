@@ -14,7 +14,7 @@ from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from .idps import get_idp
+from .idps import IDP
 
 log = logging.getLogger(__name__)
 _saml2_settings = None
@@ -23,9 +23,9 @@ _saml2_settings = None
 def get_saml2_settings():
     global _saml2_settings
     if not _saml2_settings:
-        IDP = get_idp(settings.IDP)
+        idp = IDP()
         _saml2_settings = OneLogin_Saml2_Settings(
-            settings=IDP.get_settings(),
+            settings=idp.get_settings(),
             sp_validation_only=True,
         )
     return _saml2_settings

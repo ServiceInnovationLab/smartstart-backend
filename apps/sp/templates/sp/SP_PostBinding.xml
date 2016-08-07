@@ -18,7 +18,7 @@
 				</ds:X509Data>
 			</ds:KeyInfo>
 		</md:KeyDescriptor>
-        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="{{conf.full_acs_url}}" index="0" isDefault="true" />
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="{{conf.sp_acs_url}}" index="0" isDefault="true" />
 	</md:SPSSODescriptor>
 	<md:Organization>
 		<md:OrganizationName xml:lang="en-us">

@@ -2,13 +2,11 @@ from .base import *  # noqa
 
 DEBUG = True
 
-# USER = os.environ['USER']
-# SITE_DOMAIN = '{}.dev.boac.lef'.format(USER)
 SITE_URL = 'http://127.0.0.1:8000'
 
 ALLOWED_HOSTS = ['*']
 
-IDP = 'FAKE'  # FAKE, MTS, ITE, PRD
+IDP = 'FAKE'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
 
 DATABASES = {
     'default': {

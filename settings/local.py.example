@@ -3,7 +3,7 @@ BUNDLES_ROOT = '/home/joeg/lef/ops/files/bundles'
 
 SITE_URL = 'https://joeg.dev.boac.lef'
 
-IDP = 'MTS'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
+BUNDLE_NAME = 'MTS'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
 
 DATABASES = {
     'default': {

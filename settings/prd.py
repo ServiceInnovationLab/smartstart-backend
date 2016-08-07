@@ -4,7 +4,7 @@ DEBUG = False
 
 SESSION_COOKIE_SECURE = True
 
-IDP = 'PRD'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
+BUNDLE_NAME = 'PRD'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
 
 ALLOWED_HOSTS = ['*.dev.boac.lef']  # TODO
 

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ...idps import IDP
+from ...bundles import Bundle
 
 
 class Command(BaseCommand):
@@ -15,6 +15,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         site_url = options.get('site_url')
-        idp = IDP(site_url=site_url)
+        idp = Bundle(site_url=site_url)
         text = idp.render_xml()
         self.stdout.write(text)

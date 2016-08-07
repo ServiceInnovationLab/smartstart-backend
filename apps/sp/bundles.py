@@ -6,7 +6,7 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 from utils import full_reverse, get_cer_body, get_private_key_body
 
-IDPS = {
+BUNDLES = {
     'MTS': {
         'saml_idp_cer': 'mts_login_saml_idp.cer',
         'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
@@ -57,17 +57,17 @@ class AuthnContextClassRef(object):
     ModStrength__OTP_Mobile_SMS = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength::OTP:Mobile:SMS'
 
 
-class IDP(object):
+class Bundle(object):
 
-    def __init__(self, site_url=None, bundles_root=None, idp=None, sp=None):
+    def __init__(self, site_url=None, bundles_root=None, name=None):
         self.site_url = site_url or settings.SITE_URL
         self.bundles_root = path(bundles_root or settings.BUNDLES_ROOT)
         assert self.bundles_root.isdir(), self.bundles_root
-        self.idp = idp or settings.IDP
-        self.config = IDPS[self.idp]
-        bundle_name = self.idp.split('-')[0]  # ITE-uat --> ITE
-        self.bundle_path = self.bundles_root / bundle_name
-        assert self.bundle_path.isdir(), self.bundle_path
+        self.name = name or settings.BUNDLE_NAME
+        self.config = BUNDLES[self.name]
+        dir_name = self.name.split('-')[0]  # ITE-uat --> ITE
+        self.path = self.bundles_root / dir_name
+        assert self.path.isdir(), self.path
 
         filenames = (
             self.config['saml_idp_cer'],
@@ -78,23 +78,26 @@ class IDP(object):
             self.config['mutual_ssl_sp_key'],
         )
         for filename in filenames:
-            assert self.bundle_file(filename).isfile(), filename
+            assert self.file_path(filename).isfile(), filename
 
-    def bundle_file(self, filename):
+    def __unicode__(self):
+        return self.idp
+
+    def file_path(self, filename):
         """
         Get full path from base filename.
 
         e.g.: mts_saml_sp.cer --> /path/bundles/root/MTS/mts_saml_sp.cer
         """
-        return self.bundle_path / filename
+        return self.path / filename
 
-    def bundle_text(self, filename):
+    def file_text(self, filename):
         """
         Get text content from filename
 
         e.g.: bundle('mts_saml_sp.cer') --> cert content as text
         """
-        return self.bundle_file(filename).text().strip()
+        return self.file_path(filename).text().strip()
 
     @property
     def sp_entity_id(self):
@@ -108,15 +111,15 @@ class IDP(object):
 
     @property
     def idp_cer_body(self):
-        return get_cer_body(self.bundle_text(self.config['saml_idp_cer']))
+        return get_cer_body(self.file_text(self.config['saml_idp_cer']))
 
     @property
     def sp_cer_body(self):
-        return get_cer_body(self.bundle_text(self.config['saml_sp_cer']))
+        return get_cer_body(self.file_text(self.config['saml_sp_cer']))
 
     @property
     def sp_key_body(self):
-        return get_private_key_body(self.bundle_text(self.config['saml_sp_key']))
+        return get_private_key_body(self.file_text(self.config['saml_sp_key']))
 
     def render_xml(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})

@@ -18,7 +18,7 @@ class Bundle(object):
 
     def __init__(self, site_url=None, bundles_root=None, name=None):
         self.name = name or settings.BUNDLE_NAME
-        assert self.name in settings.BUNDLES
+        assert self.name in settings.BUNDLES, 'invalid bundle name: {}'.format(self.name)
         self.config = settings.BUNDLES[self.name]
         dir_name = self.name.split('-')[0]  # ITE-uat --> ITE
 

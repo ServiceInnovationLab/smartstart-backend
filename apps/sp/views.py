@@ -1,13 +1,12 @@
 import logging
 
-from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from django import http
 
-from annoying.decorators import render_to
+from decorators import render_to
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.response import OneLogin_Saml2_Response

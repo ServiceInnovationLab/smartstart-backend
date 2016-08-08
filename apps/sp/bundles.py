@@ -1,10 +1,10 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 from path import path
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
-from utils import full_reverse, get_cer_body, get_private_key_body
 
 BUNDLES = {
     'MTS': {
@@ -69,57 +69,79 @@ class Bundle(object):
         self.path = self.bundles_root / dir_name
         assert self.path.isdir(), self.path
 
-        filenames = (
-            self.config['saml_idp_cer'],
-            self.config['mutual_ssl_idp_cer'],
-            self.config['saml_sp_cer'],
-            self.config['saml_sp_key'],
-            self.config['mutual_ssl_sp_cer'],
-            self.config['mutual_ssl_sp_key'],
+        fields = (
+            'saml_idp_cer',
+            'mutual_ssl_idp_cer',
+            'saml_sp_cer',
+            'saml_sp_key',
+            'mutual_ssl_sp_cer',
+            'mutual_ssl_sp_key',
         )
-        for filename in filenames:
-            assert self.file_path(filename).isfile(), filename
 
-    def __unicode__(self):
-        return self.idp
+        for field in fields:
+            assert self.file_path(field).isfile()
 
-    def file_path(self, filename):
-        """
-        Get full path from base filename.
+        for prefix in ('saml_sp', 'mutual_ssl_sp'):
+            assert self.check_cer_and_key(prefix)
 
-        e.g.: mts_saml_sp.cer --> /path/bundles/root/MTS/mts_saml_sp.cer
-        """
-        return self.path / filename
+    def __str__(self):
+        return self.name
 
-    def file_text(self, filename):
-        """
-        Get text content from filename
+    def check_cer_and_key(self, prefix):
+        from subprocess import check_output
+        cer_field = '{}_cer'.format(prefix)
+        key_field = '{}_key'.format(prefix)
+        cer_path = self.file_path(cer_field)
+        key_path = self.file_path(key_field)
+        cmd = 'openssl x509 -noout -modulus -in {}'.format(cer_path)
+        s1 = check_output(cmd.split())
+        cmd = 'openssl rsa -noout -modulus -in {}'.format(key_path)
+        s2 = check_output(cmd.split())
+        return s1 == s2
 
-        e.g.: bundle('mts_saml_sp.cer') --> cert content as text
-        """
-        return self.file_path(filename).text().strip()
+    def file_path(self, field):
+        return self.path / self.config[field]
+
+    def file_text(self, field):
+        return self.file_path(field).text().strip()
+
+    def file_body(self, field, begin='', end=''):
+        return self.file_text(field).lstrip(begin).rstrip(end).strip()
+
+    def cer_body(self, field):
+        begin = '-----BEGIN CERTIFICATE-----'
+        end = '-----END CERTIFICATE-----'
+        return self.file_body(field, begin=begin, end=end)
+
+    def key_body(self, field):
+        begin = '-----BEGIN PRIVATE KEY-----'
+        end = '-----END PRIVATE KEY-----'
+        return self.file_body(field, begin=begin, end=end)
+
+    @property
+    def idp_cer_body(self):
+        return self.cer_body('saml_idp_cer')
+
+    @property
+    def sp_cer_body(self):
+        return self.cer_body('saml_sp_cer')
+
+    @property
+    def sp_key_body(self):
+        return self.key_body('saml_sp_key')
+
+    def full_url(self, url):
+        return self.site_url.strip('/') + url
 
     @property
     def sp_entity_id(self):
         # Just use full login url as entity id.
         # realme does not allow entity id ends with slash
-        return full_reverse('sp_login', site_url=self.site_url).strip('/')
+        return self.full_url(reverse('sp_login')).strip('/')
 
     @property
     def sp_acs_url(self):
-        return full_reverse('sp_acs', site_url=self.site_url)
-
-    @property
-    def idp_cer_body(self):
-        return get_cer_body(self.file_text(self.config['saml_idp_cer']))
-
-    @property
-    def sp_cer_body(self):
-        return get_cer_body(self.file_text(self.config['saml_sp_cer']))
-
-    @property
-    def sp_key_body(self):
-        return get_private_key_body(self.file_text(self.config['saml_sp_key']))
+        return self.full_url(reverse('sp_acs'))
 
     def render_xml(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
@@ -150,7 +172,7 @@ class Bundle(object):
                     "binding": constants.BINDING_HTTP_POST,
                 },
                 # "singleLogoutService": {
-                #     "url": full_reverse('sp_ls'),
+                #     "url": "",
                 #     "binding": constants.BINDING_HTTP_REDIRECT,
                 # },
                 "NameIDFormat": constants.NAMEID_UNSPECIFIED,

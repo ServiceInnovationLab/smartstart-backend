@@ -31,7 +31,7 @@ class UserViewSet(ModelViewSet):
 def login_router(request):
     BUNDLE_NAME = getattr(settings, 'BUNDLE_NAME', 'FAKE').upper()
     log.info('current BUNDLE_NAME: {}'.format(BUNDLE_NAME))
-    if BUNDLE_NAME.startswith(('MTS', 'ITE', 'PRD')):
+    if BUNDLE_NAME in settings.BUNDLES:
         return sp_login(request)
     else:
         return auth_login(request)

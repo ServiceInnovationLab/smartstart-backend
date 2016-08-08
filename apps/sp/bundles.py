@@ -6,53 +6,6 @@ from path import path
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 
-BUNDLES = {
-    'MTS': {
-        'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
-        'saml_idp_cer': 'mts_login_saml_idp.cer',
-        'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
-        'single_sign_on_service': 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
-        'saml_sp_cer': 'mts_saml_sp.cer',
-        'saml_sp_key': 'mts_saml_sp.key',
-        'mutual_ssl_sp_cer': 'mts_mutual_ssl_sp.cer',
-        'mutual_ssl_sp_key': 'mts_mutual_ssl_sp.key',
-    },
-    'ITE-uat': {
-        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'site_url': 'https://uat.bundle.services.govt.nz',
-        'saml_sp_cer': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.private.key',
-    },
-    'ITE-testing': {
-        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'site_url': 'https://testing.bundle.services.govt.nz',
-        'saml_sp_cer': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.private.key',
-    },
-    'PRD': {
-        'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
-        'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'site_url': 'https://bundle.services.govt.nz',
-        'saml_sp_cer': 'sa.saml.sig.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'sa.saml.sig.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'sa.mutual.sig.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'sa.mutual.sig.bundle.services.govt.nz.private.key',
-    },
-}
-
-
 class AuthnContextClassRef(object):
     LowStrength = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength'
     ModStrength = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength'
@@ -64,14 +17,17 @@ class AuthnContextClassRef(object):
 class Bundle(object):
 
     def __init__(self, site_url=None, bundles_root=None, name=None):
-        self.site_url = site_url or settings.SITE_URL
+        self.name = name or settings.BUNDLE_NAME
+        assert self.name in settings.BUNDLES
+        self.config = settings.BUNDLES[self.name]
+        dir_name = self.name.split('-')[0]  # ITE-uat --> ITE
+
         self.bundles_root = path(bundles_root or settings.BUNDLES_ROOT)
         assert self.bundles_root.isdir(), self.bundles_root
-        self.name = name or settings.BUNDLE_NAME
-        self.config = BUNDLES[self.name]
-        dir_name = self.name.split('-')[0]  # ITE-uat --> ITE
         self.path = self.bundles_root / dir_name
         assert self.path.isdir(), self.path
+
+        self.site_url = site_url or settings.SITE_URL
 
         fields = (
             'saml_idp_cer',

@@ -29,9 +29,9 @@ class UserViewSet(ModelViewSet):
 
 
 def login_router(request):
-    IDP = getattr(settings, 'IDP', 'FAKE').upper()
-    log.info('current IDP: {}'.format(IDP))
-    if IDP in ('MTS', 'ITE', 'PRD'):
+    BUNDLE_NAME = getattr(settings, 'BUNDLE_NAME', 'FAKE').upper()
+    log.info('current BUNDLE_NAME: {}'.format(BUNDLE_NAME))
+    if BUNDLE_NAME.startswith(('MTS', 'ITE', 'PRD')):
         return sp_login(request)
     else:
         return auth_login(request)

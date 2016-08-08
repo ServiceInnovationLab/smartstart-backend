@@ -14,7 +14,5 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        site_url = options.get('site_url')
-        idp = Bundle(site_url=site_url)
-        text = idp.render_xml()
+        text = Bundle(site_url=options.get('site_url')).render()
         self.stdout.write(text)

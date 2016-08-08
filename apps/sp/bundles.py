@@ -8,6 +8,7 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 BUNDLES = {
     'MTS': {
+        'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
         'saml_idp_cer': 'mts_login_saml_idp.cer',
         'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
         'single_sign_on_service': 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
@@ -17,6 +18,7 @@ BUNDLES = {
         'mutual_ssl_sp_key': 'mts_mutual_ssl_sp.key',
     },
     'ITE-uat': {
+        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
         'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
@@ -27,6 +29,7 @@ BUNDLES = {
         'mutual_ssl_sp_key': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.private.key',
     },
     'ITE-testing': {
+        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
         'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
@@ -37,14 +40,15 @@ BUNDLES = {
         'mutual_ssl_sp_key': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.private.key',
     },
     'PRD': {
+        'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
         'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
         'site_url': 'https://bundle.services.govt.nz',
         'saml_sp_cer': 'sa.saml.sig.bundle.services.govt.nz.crt',
         'saml_sp_key': 'sa.saml.sig.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.bundle.services.govt.nz.private.key',
+        'mutual_ssl_sp_cer': 'sa.mutual.sig.bundle.services.govt.nz.crt',
+        'mutual_ssl_sp_key': 'sa.mutual.sig.bundle.services.govt.nz.private.key',
     },
 }
 
@@ -134,6 +138,10 @@ class Bundle(object):
         return self.site_url.strip('/') + url
 
     @property
+    def idp_entity_id(self):
+        return self.config['idp_entity_id']
+
+    @property
     def sp_entity_id(self):
         # Just use full login url as entity id.
         # realme does not allow entity id ends with slash
@@ -143,7 +151,7 @@ class Bundle(object):
     def sp_acs_url(self):
         return self.full_url(reverse('sp_acs'))
 
-    def render_xml(self, template='sp/SP_PostBinding.xml'):
+    def render(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
 
     def get_settings(self):
@@ -180,9 +188,9 @@ class Bundle(object):
                 "privateKey": self.sp_key_body,
             },
             "idp": {
-                "entityId": self.config['entity_id'],
+                "entityId": self.idp_entity_id,
                 "singleSignOnService": {
-                    "url": self.config['single_singn_on_service'],
+                    "url": self.config['single_sign_on_service'],
                     "binding": constants.BINDING_HTTP_REDIRECT,
                 },
                 # "singleLogoutService": {

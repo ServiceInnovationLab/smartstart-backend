@@ -63,6 +63,33 @@ Then you can visit site at:
 
     http://127.0.0.1:8000
 
+## Set up for MTS
+Decrypt gpg file for MTS bundle, refer to bundles/README.md for details.
+Then make sure following settings are right:
+
+    BUNDLE_NAME = 'MTS'
+    BUNDLES_ROOT = '/path/to/bundles'
+    SITE_URL = 'https://mts-test.dev.boac.lef'
+
+Render post binding xml for preview:
+
+    python manage.py render_post_binding_xml
+
+This will print the xml to stdout, you can have a check.
+Once it's fine, redirect it to a file:
+
+    python manage.py render_post_binding_xml > ~/meta.html
+
+If you are on a server, you may need to scp it back:
+
+    scp YOUR-SERVER:meta.html .
+
+Upload this file to:
+
+    https://mts.realme.govt.nz/logon-mts/metadataupdate
+
+Note: after uploading, it just verify the file, you need to click a second import button to finally apply it.
+
 ## Run site in docker
 
 Install docker:

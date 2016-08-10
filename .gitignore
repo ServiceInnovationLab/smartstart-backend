@@ -8,8 +8,8 @@ log/
 tmp/
 *.sqlite3
 *.db
-static/
-bundles/MTS/
-bundles/ITE/
-bundles/PRD/
-bundles/*.tgz
+/static/
+/bundles/MTS/
+/bundles/ITE/
+/bundles/PRD/
+/bundles/*.tgz

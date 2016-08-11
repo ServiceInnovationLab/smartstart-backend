@@ -71,20 +71,11 @@ Then make sure following settings are right:
     BUNDLES_ROOT = '/path/to/bundles'
     SITE_URL = 'https://mts-test.dev.boac.lef'
 
-Render post binding xml for preview:
+Then go to this url:
 
-    python manage.py render_post_binding_xml
+    /sp/metadata/
 
-This will print the xml to stdout, you can have a check.
-Once it's fine, redirect it to a file:
-
-    python manage.py render_post_binding_xml > ~/meta.html
-
-If you are on a server, you may need to scp it back:
-
-    scp YOUR-SERVER:meta.html .
-
-Upload this file to:
+Save page to local as a text file, then upload it to:
 
     https://mts.realme.govt.nz/logon-mts/metadataupdate
 

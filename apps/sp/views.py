@@ -63,7 +63,7 @@ def metadata(request):
     if errors:
         return http.HttpResponseServerError(content=', '.join(errors))
     else:
-        return http.HttpResponse(content=metadata, content_type='text/xml')
+        return http.HttpResponse(content=metadata, content_type='text/plain')
 
 
 @csrf_exempt

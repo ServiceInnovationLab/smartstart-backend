@@ -99,9 +99,13 @@ class Bundle(object):
 
     @property
     def sp_entity_id(self):
-        # Just use full login url as entity id.
-        # realme does not allow entity id ends with slash
-        return self.full_url(reverse('sp_login')).strip('/')
+        """
+        use SITE_URL and sp_entity_name to format the sp_entity_id
+        """
+        return '{}/sp/{}'.format(
+            settings.SITE_URL.strip('/'),
+            self.config['sp_entity_name'].strip()
+        )
 
     @property
     def sp_acs_url(self):

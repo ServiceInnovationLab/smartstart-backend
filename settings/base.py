@@ -121,7 +121,7 @@ LOGGING = {
 BUNDLES = {
     'MTS': {
         'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
-        'sp_entity_name': 'mts',
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/mts',
         'saml_idp_cer': 'mts_login_saml_idp.cer',
         'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
         'single_sign_on_service': 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
@@ -132,7 +132,7 @@ BUNDLES = {
     },
     'ITE-uat': {
         'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'sp_entity_name': 'uat',
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/uat',
         'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
@@ -144,7 +144,7 @@ BUNDLES = {
     },
     'ITE-testing': {
         'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'sp_entity_name': 'testing',
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/testing',
         'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
@@ -156,7 +156,7 @@ BUNDLES = {
     },
     'PRD': {
         'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
-        'sp_entity_name': 'prd',  # TODO
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/prd',  # TODO: to confirm
         'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',

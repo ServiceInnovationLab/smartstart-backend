@@ -99,13 +99,7 @@ class Bundle(object):
 
     @property
     def sp_entity_id(self):
-        """
-        use SITE_URL and sp_entity_name to format the sp_entity_id
-        """
-        return '{}/sp/{}'.format(
-            settings.SITE_URL.strip('/'),
-            self.config['sp_entity_name'].strip()
-        )
+        return self.config['sp_entity_id'].strip()
 
     @property
     def sp_acs_url(self):

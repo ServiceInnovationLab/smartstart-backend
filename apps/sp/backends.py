@@ -6,7 +6,7 @@ class SamlBackend(object):
     def authenticate(self, saml2_auth=None):
         username = saml2_auth.get_nameid()
         # TODO: save attrs to user
-        # attrs = auth.get_attributes()
+        attrs = saml2_auth.get_attributes()
         user, _ = User.objects.get_or_create(username=username)
         return user
 

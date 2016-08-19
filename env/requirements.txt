@@ -7,5 +7,6 @@ pytz
 python3-saml
 path.py
 ipython
+ipdb
 uwsgi
 whitenoise

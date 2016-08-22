@@ -169,3 +169,11 @@ BUNDLES = {
 }
 
 BUNDLES_ROOT = BASE_DIR.parent/'bundles'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':  '/tmp/db.sqlite3',
+    }
+}
+

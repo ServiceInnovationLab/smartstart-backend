@@ -12,7 +12,7 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 
 def dt_fmt(dt):
-    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
 
 class AuthnContextClassRef(object):

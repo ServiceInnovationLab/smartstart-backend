@@ -6,6 +6,7 @@ python-dateutil
 pytz
 python3-saml
 path.py
+requests
 ipython
 ipdb
 uwsgi

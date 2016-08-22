@@ -176,10 +176,16 @@ class Bundle(object):
 
     def render_token_issue_request(self):
         NAMESPACES = {
+            'ds': 'http://www.w3.org/2000/09/xmldsig#',
+            'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
+            'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
             'soap': 'http://www.w3.org/2003/05/soap-envelope',
+            'wsa': "http://www.w3.org/2005/08/addressing",
             'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+            'wst': "http://docs.oasis-open.org/ws-sx/ws-trust/200512",
             'wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
         }
+        REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
         context = {
@@ -187,35 +193,22 @@ class Bundle(object):
             'Created': dt_fmt(created),
             'Expires': dt_fmt(expires),
             'MessageID': str(uuid.uuid4()),
+            'REF_IDS': REF_IDS,
+            'NAMESPACES': NAMESPACES,
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)
         # etree.parse will return ElementTree, then you need to call getroot on it
         # fromstring will return the root directly.
         root_element = etree.fromstring(xml.encode('utf-8'))
+        xmlsec.tree.add_ids(root_element, ["Id"])  # important!
         header_element = root_element.find('soap:Header', namespaces=NAMESPACES)
         security_element = header_element.find('wsse:Security', namespaces=NAMESPACES)
-        # Create a signature template for RSA-SHA1 enveloped signature.
-        signature_node = xmlsec.template.create(
-            security_element,  # Element
-            xmlsec.Transform.EXCL_C14N,  # c14n_method
-            xmlsec.Transform.RSA_SHA1,   # sign_method
-            ns='ds'
-        )
-
-        # Add the <ds:Signature/> node to the document.
-        security_element.append(signature_node)
-
-        ref_ids = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body")
-
-        for elem_id in ref_ids:
-            # Add the <ds:Reference/> node to the signature template.
-            ref = xmlsec.template.add_reference(signature_node, xmlsec.Transform.SHA256, uri='#' + elem_id)
-            # Add the excl_c14n transform descriptor.
-            xmlsec.template.add_transform(ref, xmlsec.Transform.EXCL_C14N)
+        signature_node = security_element.find('ds:Signature', namespaces=NAMESPACES)
 
         # Add the <ds:KeyInfo/> and <ds:KeyName/> nodes.
         key_info = xmlsec.template.ensure_key_info(signature_node)
-        xmlsec.template.add_x509_data(key_info)
+        # xmlsec.template.add_x509_data(key_info)
+        xmlsec.template.add_key_name(key_info)
 
         # Load private key (assuming that there is no password).
         file_path = self.file_path('mutual_ssl_sp_key')
@@ -227,18 +220,14 @@ class Bundle(object):
         file_path = self.file_path('mutual_ssl_sp_cer')
         assert file_path.isfile
         key.load_cert_from_file(file_path, xmlsec.KeyFormat.PEM)
+
         key.name = file_path.basename().encode('utf-8')
 
         # Create a digital signature context (no key manager is needed).
         ctx = xmlsec.SignatureContext()
         ctx.key = key
-
         # Sign the template.
-        # ctx.sign(signature_node)
-
-        import ipdb
-        ipdb.set_trace()
-
-        text = etree.tostring(root_element, pretty_print=True)
-        return text.decode('utf-8')
+        ctx.sign(signature_node)
+        # return a utf-8 encoded byte str
+        return etree.tostring(root_element, pretty_print=True)
 

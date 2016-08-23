@@ -12,8 +12,17 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 from utils import log_me
 
+
 def dt_fmt(dt):
     return dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+
+
+def pretty_xml(xml):
+    if xml:
+        et = etree.fromstring(xml)
+        return etree.tostring(et, pretty_print=True).decode('utf-8')
+    else:
+        return ''
 
 
 class AuthnContextClassRef(object):
@@ -177,7 +186,7 @@ class Bundle(object):
             self.file_path('mutual_ssl_sp_key'),
         )
         soap_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
-        log_me(soap_xml, print_me=False)
+        log_me(soap_xml, print_me=False, name='token_issue_request')
         return requests.post(url, data=soap_xml, headers=headers, cert=cert)
 
     def render_token_issue_request(self, saml2_assertion=''):
@@ -208,7 +217,7 @@ class Bundle(object):
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
             'key_identifier': self.key_identifier(cer_path.text()),
-            'saml2_assertion': saml2_assertion,
+            'saml2_assertion': pretty_xml(saml2_assertion),
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)
         # etree.parse will return ElementTree, then you need to call getroot on it

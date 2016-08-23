@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from . import models as m
+from apps.accounts.models import Profile
 
 import logging
 log = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class SamlBackend(object):
         attrs = saml2_auth.get_attributes()
         if attrs:
             log.info(attrs)
-            m.Profile.update_or_create(user=user, defaults={'attrs': attrs})
+            Profile.objects.update_or_create(user=user, defaults={'attrs': attrs})
         else:
             log.error('no attrs for logon')
         return user

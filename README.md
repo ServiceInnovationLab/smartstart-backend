@@ -41,6 +41,7 @@ Set up settings:
     vim local.py
 
 The default db is sqlite, for which you don't need any setup.
+
 But if you want to use PostgreSQL, you may need to install it and override the db settings in local.py.
 
 Create or update database tables:
@@ -51,7 +52,7 @@ Load pre-made test users from fixture:
 
     python manage.py loaddata test_users.json
 
-credential:
+credentials:
 - admin/admin
 - test/test
 

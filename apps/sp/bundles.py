@@ -164,21 +164,21 @@ class Bundle(object):
     def render(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
 
-    def send_token_issue_request(self):
+    def key_identifier(self, text):
+        import hashlib, base64
+        return base64.b64encode(hashlib.sha1(text.encode('utf-8')).digest())
+
+    def send_token_issue_request(self, saml2_assertion=''):
         url = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
         headers = {'content-type': 'text/xml'}
         cert = (
             self.file_path('mutual_ssl_sp_cer'),
             self.file_path('mutual_ssl_sp_key'),
         )
-        soap_xml = self.render_token_issue_request()
+        soap_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
         return requests.post(url, data=soap_xml, headers=headers, cert=cert)
 
-    def key_identifier(self, text):
-        import hashlib, base64
-        return base64.b64encode(hashlib.sha1(text.encode('utf-8')).digest())
-
-    def render_token_issue_request(self):
+    def render_token_issue_request(self, saml2_assertion=''):
         NAMESPACES = {
             'ds': 'http://www.w3.org/2000/09/xmldsig#',
             'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
@@ -200,12 +200,13 @@ class Bundle(object):
 
         context = {
             'conf': self,
-            'Created': dt_fmt(created),
-            'Expires': dt_fmt(expires),
-            'MessageID': str(uuid.uuid4()),
+            'created': dt_fmt(created),
+            'expires': dt_fmt(expires),
+            'message_id': str(uuid.uuid4()),
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
-            'KeyIdentifier': self.key_identifier(cer_path.text())
+            'key_identifier': self.key_identifier(cer_path.text()),
+            'saml2_assertion': saml2_assertion,
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)
         # etree.parse will return ElementTree, then you need to call getroot on it

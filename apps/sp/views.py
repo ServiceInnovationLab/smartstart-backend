@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django import http
 
 from decorators import render_to
@@ -99,3 +100,16 @@ def assertion_consumer_service(request):
             return redirect('/')
 
     return {'code': 'ERROR', 'msg': 'ACS Failed'}
+
+
+@login_required
+@render_to('sp/error.html')
+def seamless(request):
+    user = request.user
+    profile = user.profile
+    bundle = Bundle()
+    r = bundle.send_token_issue_request(saml2_assertion=profile.saml2_assertion)
+    return {
+        'code': 'seamless',
+        'msg': r.content.decode('utf-8')
+    }

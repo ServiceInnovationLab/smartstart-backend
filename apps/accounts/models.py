@@ -32,4 +32,4 @@ class Profile(TimeStampedModel):
 
     @property
     def saml2_assertion(self):
-        return self.attrs['logon_attributes_token'][0]
+        return self.attrs.get('logon_attributes_token', [''])[0] if self.attrs else ''

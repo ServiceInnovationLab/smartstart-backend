@@ -10,6 +10,7 @@ from path import path
 from datetime import datetime, timedelta
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
+from utils import log_me
 
 def dt_fmt(dt):
     return dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
@@ -176,6 +177,7 @@ class Bundle(object):
             self.file_path('mutual_ssl_sp_key'),
         )
         soap_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
+        log_me(soap_xml, print_me=False)
         return requests.post(url, data=soap_xml, headers=headers, cert=cert)
 
     def render_token_issue_request(self, saml2_assertion=''):
@@ -230,5 +232,5 @@ class Bundle(object):
         # Sign the template.
         ctx.sign(signature_node)
         # return a utf-8 encoded byte str
-        return etree.tostring(root_element, pretty_print=True)
+        return etree.tostring(root_element, pretty_print=True).decode('utf-8')
 

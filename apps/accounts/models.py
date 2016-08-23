@@ -29,3 +29,7 @@ class Profile(TimeStampedModel):
 
     def __unicode__(self):
         return self.user.get_full_name()
+
+    @property
+    def saml2_assertion(self):
+        return self.attrs['logon_attributes_token'][0]

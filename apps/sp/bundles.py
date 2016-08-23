@@ -174,6 +174,10 @@ class Bundle(object):
         soap_xml = self.render_token_issue_request()
         return requests.post(url, data=soap_xml, headers=headers, cert=cert)
 
+    def key_identifier(self, text):
+        import hashlib, base64
+        return base64.b64encode(hashlib.sha1(text.encode('utf-8')).digest())
+
     def render_token_issue_request(self):
         NAMESPACES = {
             'ds': 'http://www.w3.org/2000/09/xmldsig#',
@@ -188,6 +192,12 @@ class Bundle(object):
         REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
+
+        cer_path = self.file_path('saml_sp_cer')
+        assert cer_path.isfile
+        key_path = self.file_path('saml_sp_key')
+        assert key_path.isfile
+
         context = {
             'conf': self,
             'Created': dt_fmt(created),
@@ -195,6 +205,7 @@ class Bundle(object):
             'MessageID': str(uuid.uuid4()),
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
+            'KeyIdentifier': self.key_identifier(cer_path.text())
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)
         # etree.parse will return ElementTree, then you need to call getroot on it
@@ -205,23 +216,12 @@ class Bundle(object):
         security_element = header_element.find('wsse:Security', namespaces=NAMESPACES)
         signature_node = security_element.find('ds:Signature', namespaces=NAMESPACES)
 
-        # Add the <ds:KeyInfo/> and <ds:KeyName/> nodes.
-        key_info = xmlsec.template.ensure_key_info(signature_node)
-        # xmlsec.template.add_x509_data(key_info)
-        xmlsec.template.add_key_name(key_info)
-
         # Load private key (assuming that there is no password).
-        file_path = self.file_path('mutual_ssl_sp_key')
-        assert file_path.isfile
-        key = xmlsec.Key.from_file(file_path, xmlsec.KeyFormat.PEM)
+        key = xmlsec.Key.from_file(key_path, xmlsec.KeyFormat.PEM)
         assert key is not None
 
         # Load the certificate and add it to the key.
-        file_path = self.file_path('mutual_ssl_sp_cer')
-        assert file_path.isfile
-        key.load_cert_from_file(file_path, xmlsec.KeyFormat.PEM)
-
-        key.name = file_path.basename().encode('utf-8')
+        key.load_cert_from_file(cer_path, xmlsec.KeyFormat.PEM)
 
         # Create a digital signature context (no key manager is needed).
         ctx = xmlsec.SignatureContext()

@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 
 import uuid
 import xmlsec
+import base64
 import requests
 from lxml import etree
 from path import path
@@ -174,10 +175,6 @@ class Bundle(object):
     def render(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
 
-    def key_identifier(self, text):
-        import hashlib, base64
-        return base64.b64encode(hashlib.sha1(text.encode('utf-8')).digest())
-
     def send_token_issue_request(self, saml2_assertion=''):
         url = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
         headers = {'content-type': 'text/xml'}
@@ -185,9 +182,12 @@ class Bundle(object):
             self.file_path('mutual_ssl_sp_cer'),
             self.file_path('mutual_ssl_sp_key'),
         )
-        soap_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
-        log_me(soap_xml, print_me=False, name='token_issue_request')
-        return requests.post(url, data=soap_xml, headers=headers, cert=cert)
+        soap_request_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
+        log_me(soap_request_xml, name='token_issue_request')
+        r = requests.post(url, data=soap_request_xml, headers=headers, cert=cert)
+        soap_response_xml = pretty_xml(r.content.decode('utf-8'))
+        log_me(soap_response_xml, name='token_issue_response')
+        return r
 
     def render_token_issue_request(self, saml2_assertion=''):
         NAMESPACES = {
@@ -216,7 +216,7 @@ class Bundle(object):
             'message_id': str(uuid.uuid4()),
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
-            'key_identifier': self.key_identifier(cer_path.text()),
+            'key_identifier': base64.b64encode(cer_path.read_hash('sha1')),
             'saml2_assertion': pretty_xml(saml2_assertion),
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)

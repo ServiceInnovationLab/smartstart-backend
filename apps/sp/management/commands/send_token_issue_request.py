@@ -7,6 +7,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         b = Bundle(site_url=options.get('site_url'))
-        r = b.send_token_issue_request()
-        self.stdout.write(r.content.decode('utf-8'))
+        b.send_token_issue_request()
 

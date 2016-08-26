@@ -11,3 +11,4 @@ ipython
 ipdb
 uwsgi
 whitenoise
+pyOpenSSL

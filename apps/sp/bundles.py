@@ -175,14 +175,14 @@ class Bundle(object):
     def render(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
 
-    def send_token_issue_request(self, saml2_assertion=''):
+    def send_token_issue_request(self, user):
         url = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
         headers = {'content-type': 'text/xml'}
         cert = (
             self.file_path('mutual_ssl_sp_cer'),
             self.file_path('mutual_ssl_sp_key'),
         )
-        soap_request_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
+        soap_request_xml = self.render_token_issue_request(user)
         log_me(soap_request_xml, name='token_issue_request')
         r = requests.post(url, data=soap_request_xml, headers=headers, cert=cert)
         soap_response_xml = pretty_xml(r.content.decode('utf-8'))
@@ -207,7 +207,7 @@ class Bundle(object):
         b64_str = b64_bytes.decode('utf-8')
         return b64_str
 
-    def render_token_issue_request(self, saml2_assertion=''):
+    def render_token_issue_request(self, user):
         NAMESPACES = {
             'ds': 'http://www.w3.org/2000/09/xmldsig#',
             'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
@@ -226,6 +226,8 @@ class Bundle(object):
         assert cer_path.isfile
         key_path = self.file_path('saml_sp_key')
         assert key_path.isfile
+
+        saml2_assertion = user.profile.saml2_assertion
 
         context = {
             'conf': self,

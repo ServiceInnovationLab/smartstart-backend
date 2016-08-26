@@ -189,6 +189,24 @@ class Bundle(object):
         log_me(soap_response_xml, name='token_issue_response')
         return r
 
+    def key_identifier(self, cer_path):
+        from OpenSSL.crypto import load_certificate, FILETYPE_PEM
+        cert_file_string = cer_path.text()
+        cert = load_certificate(FILETYPE_PEM, cert_file_string)
+        # a bytes object, e.g.: b'B5:A1:0D:AA:42:50:AE:A3:B0:36:B4:A2:A6:E6:68:29:F8:52:36:3F'
+        fingerprint_bytes_with_colon = cert.digest("sha1")
+        # a string with colon: 'B5:A1:0D:AA:42:50:AE:A3:B0:36:B4:A2:A6:E6:68:29:F8:52:36:3F'
+        fingerprint_str_with_colon = fingerprint_bytes_with_colon.decode('utf-8')
+        # B5A10DAA4250AEA3B036B4A2A6E66829F852363F
+        fingerprint_str_without_colon = fingerprint_str_with_colon.replace(':', '')
+        # bytearray(b'\xb5\xa1\r\xaaBP\xae\xa3\xb06\xb4\xa2\xa6\xe6h)\xf8R6?')
+        ba = bytearray.fromhex(fingerprint_str_without_colon)
+        # b'taENqkJQrqOwNrSipuZoKfhSNj8='
+        b64_bytes = base64.b64encode(ba)
+        # 'taENqkJQrqOwNrSipuZoKfhSNj8='
+        b64_str = b64_bytes.decode('utf-8')
+        return b64_str
+
     def render_token_issue_request(self, saml2_assertion=''):
         NAMESPACES = {
             'ds': 'http://www.w3.org/2000/09/xmldsig#',
@@ -216,7 +234,7 @@ class Bundle(object):
             'message_id': str(uuid.uuid4()),
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
-            'key_identifier': base64.b64encode(cer_path.read_hash('sha1')),
+            'key_identifier': self.key_identifier(cer_path),
             'saml2_assertion': pretty_xml(saml2_assertion),
         }
         xml = render_to_string('sp/token_issue_tmpl.xml', context)

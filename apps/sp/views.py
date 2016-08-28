@@ -106,9 +106,8 @@ def assertion_consumer_service(request):
 @render_to('sp/error.html')
 def seamless(request):
     user = request.user
-    profile = user.profile
     bundle = Bundle()
-    r = bundle.send_token_issue_request(saml2_assertion=profile.saml2_assertion)
+    r = bundle.send_token_issue_request(user=user)
     return {
         'code': 'seamless',
         'msg': r.content.decode('utf-8')

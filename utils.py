@@ -11,4 +11,4 @@ def log_me(text, print_me=True, write_me=True, name='lef', append=False):
         if print_me:
             print(text)
         if write_me:
-            Path('/tmp/{}.log'.format(name)).touch().write_text(text, append=append)
+            Path('/tmp/{}'.format(name)).touch().write_text(text, append=append)

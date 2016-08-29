@@ -183,10 +183,10 @@ class Bundle(object):
             self.file_path('mutual_ssl_sp_key'),
         )
         soap_request_xml = self.render_token_issue_request(user)
-        log_me(soap_request_xml, name='token_issue_request')
+        log_me(soap_request_xml, name='token_issue_request.xml')
         r = requests.post(url, data=soap_request_xml, headers=headers, cert=cert)
         soap_response_xml = pretty_xml(r.content.decode('utf-8'))
-        log_me(soap_response_xml, name='token_issue_response')
+        log_me(soap_response_xml, name='token_issue_response.xml')
         return r
 
     def key_identifier(self, cer_path):

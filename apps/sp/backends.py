@@ -13,7 +13,7 @@ class SamlBackend(object):
         user, _ = User.objects.get_or_create(username=username)
         attrs = saml2_auth.get_attributes()
         if attrs:
-            log_me(attrs, name='saml2_attrs.log')
+            log_me(attrs.decode('utf-8'), name='saml2_attrs.log')
             Profile.objects.update_or_create(user=user, defaults={'attrs': attrs})
         else:
             log.error('no attrs for logon')

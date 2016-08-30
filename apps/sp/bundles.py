@@ -13,6 +13,18 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 
 from utils import log_me
 
+URL_TOKEN_ISSUE = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
+
+NAMESPACES = {
+    'ds': 'http://www.w3.org/2000/09/xmldsig#',
+    'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
+    'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
+    'soap': 'http://www.w3.org/2003/05/soap-envelope',
+    'wsa': "http://www.w3.org/2005/08/addressing",
+    'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+    'wst': "http://docs.oasis-open.org/ws-sx/ws-trust/200512",
+    'wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+}
 
 def dt_fmt(dt):
     return dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
@@ -175,21 +187,10 @@ class Bundle(object):
     def render(self, template='sp/SP_PostBinding.xml'):
         return render_to_string(template, {'conf': self})
 
-    def send_token_issue_request(self, user):
-        url = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
-        headers = {'content-type': 'text/xml'}
-        cert = (
-            self.file_path('mutual_ssl_sp_cer'),
-            self.file_path('mutual_ssl_sp_key'),
-        )
-        soap_request_xml = self.render_token_issue_request(user)
-        log_me(soap_request_xml, name='token_issue_request.xml')
-        r = requests.post(url, data=soap_request_xml, headers=headers, cert=cert)
-        soap_response_xml = pretty_xml(r.content.decode('utf-8'))
-        log_me(soap_response_xml, name='token_issue_response.xml')
-        return r
-
-    def key_identifier(self, cer_path):
+    @property
+    def key_identifier(self):
+        cer_path = self.file_path('saml_sp_cer')
+        assert cer_path.isfile
         from OpenSSL.crypto import load_certificate, FILETYPE_PEM
         cert_file_string = cer_path.text()
         cert = load_certificate(FILETYPE_PEM, cert_file_string)
@@ -207,46 +208,36 @@ class Bundle(object):
         b64_str = b64_bytes.decode('utf-8')
         return b64_str
 
-    def render_token_issue_request(self, user):
-        NAMESPACES = {
-            'ds': 'http://www.w3.org/2000/09/xmldsig#',
-            'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
-            'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
-            'soap': 'http://www.w3.org/2003/05/soap-envelope',
-            'wsa': "http://www.w3.org/2005/08/addressing",
-            'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
-            'wst': "http://docs.oasis-open.org/ws-sx/ws-trust/200512",
-            'wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
-        }
+    def render_token_issue_request(self, saml2_assertion=''):
         REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
-
-        cer_path = self.file_path('saml_sp_cer')
-        assert cer_path.isfile
-        key_path = self.file_path('saml_sp_key')
-        assert key_path.isfile
-
-        saml2_assertion = user.profile.saml2_assertion
-
         context = {
             'conf': self,
             'created': dt_fmt(created),
             'expires': dt_fmt(expires),
             'message_id': str(uuid.uuid4()),
+            'to': URL_TOKEN_ISSUE,
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
-            'key_identifier': self.key_identifier(cer_path),
+            'key_identifier': self.key_identifier,
             'saml2_assertion': pretty_xml(saml2_assertion),
         }
-        xml = render_to_string('sp/token_issue_tmpl.xml', context)
+        return render_to_string('sp/token_issue_tmpl.xml', context)
+
+    def sign_token_issue_request(self, rendered_xml):
         # etree.parse will return ElementTree, then you need to call getroot on it
         # fromstring will return the root directly.
-        root_element = etree.fromstring(xml.encode('utf-8'))
+        root_element = etree.fromstring(rendered_xml.encode('utf-8'))
         xmlsec.tree.add_ids(root_element, ["Id"])  # important!
         header_element = root_element.find('soap:Header', namespaces=NAMESPACES)
         security_element = header_element.find('wsse:Security', namespaces=NAMESPACES)
         signature_node = security_element.find('ds:Signature', namespaces=NAMESPACES)
+
+        key_path = self.file_path('saml_sp_key')
+        assert key_path.isfile
+        cer_path = self.file_path('saml_sp_cer')
+        assert cer_path.isfile
 
         # Load private key (assuming that there is no password).
         key = xmlsec.Key.from_file(key_path, xmlsec.KeyFormat.PEM)
@@ -262,4 +253,21 @@ class Bundle(object):
         ctx.sign(signature_node)
         # return a utf-8 encoded byte str
         return etree.tostring(root_element, pretty_print=True).decode('utf-8')
+
+    def send_token_issue_request(self, user):
+        saml2_assertion = user.profile.saml2_assertion
+        rendered_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
+        log_me(rendered_xml, name='token_issue_request_rendered.xml', print_me=False)
+        signed_xml = self.sign_token_issue_request(rendered_xml)
+        log_me(signed_xml, name='token_issue_request_signed.xml', print_me=False)
+
+        headers = {'content-type': 'text/xml'}
+        cert = (
+            self.file_path('mutual_ssl_sp_cer'),
+            self.file_path('mutual_ssl_sp_key'),
+        )
+        r = requests.post(URL_TOKEN_ISSUE, data=signed_xml, headers=headers, cert=cert)
+        response_xml = pretty_xml(r.content.decode('utf-8'))
+        log_me(response_xml, name='token_issue_response.xml')
+        return r
 

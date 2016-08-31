@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.db import models
 from django.contrib.auth.models import User
 from annoying.fields import AutoOneToOneField, JSONField
@@ -27,7 +25,7 @@ class Profile(TimeStampedModel):
     gender = models.CharField(max_length=10, blank=True, choices=GENDER_CHOICES)
     attrs = JSONField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.get_full_name()
 
     @property

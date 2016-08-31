@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     # our own apps
     'apps.accounts',
     'apps.sp',
+    'apps.timeline',
 
     # 3rd party apps
     'django_extensions',

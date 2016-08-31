@@ -1,0 +1,35 @@
+[
+{
+    "model": "timeline.phasemetadata",
+    "pk": 1,
+    "fields": {
+        "created_at": "2016-08-31T01:06:55.265Z",
+        "modified_at": "2016-08-31T02:11:17.372Z",
+        "modified_by": 1,
+        "weeks_start": 0,
+        "weeks_finish": 14
+    }
+},
+{
+    "model": "timeline.phasemetadata",
+    "pk": 2,
+    "fields": {
+        "created_at": "2016-08-31T01:07:01.760Z",
+        "modified_at": "2016-08-31T01:07:01.760Z",
+        "modified_by": 1,
+        "weeks_start": 15,
+        "weeks_finish": 30
+    }
+},
+{
+    "model": "timeline.phasemetadata",
+    "pk": 3,
+    "fields": {
+        "created_at": "2016-08-31T01:07:09.560Z",
+        "modified_at": "2016-08-31T02:11:24.012Z",
+        "modified_by": 1,
+        "weeks_start": 31,
+        "weeks_finish": 40
+    }
+}
+]

@@ -1,15 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from annoying.fields import AutoOneToOneField, JSONField
-
-
-class TimeStampedModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['-modified_at']
+from apps.base.models import TimeStampedModel
 
 
 class Profile(TimeStampedModel):

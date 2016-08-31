@@ -19,9 +19,12 @@ from django.views.generic import RedirectView
 
 from rest_framework import routers
 from apps.accounts import views as accounts_views
+from apps.timeline import views as timeline_views
+
 
 router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
+router.register(r'phase-metadata', timeline_views.PhaseMetadataViewSet)
 
 urlpatterns = [
     url(r'', include('apps.accounts.urls')),

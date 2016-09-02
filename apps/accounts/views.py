@@ -1,31 +1,57 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login as auth_login
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
-from rest_framework.decorators import list_route
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework import viewsets, response, decorators, serializers, permissions
+
 from apps.sp.views import login as sp_login
+from . import models as m
+
 import logging
 log = logging.getLogger(__name__)
 
-
-# Serializers define the API representation.
-class UserSerializer(HyperlinkedModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'username', 'email', 'is_staff')
 
 
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.none()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    @list_route(methods=['get'], permission_classes=[IsAuthenticated])
+    def get_queryset(self):
+        return User.objects.filter(id=self.request.user.id)
+
+    @decorators.list_route(methods=['get'])
     def me(self, request):
-        serializer = UserSerializer(request.user, context={'request': request})
-        return Response(serializer.data)
+        """Owner only and ReadOnly"""
+        user = request.user
+        profile = user.profile
+        user_serializer = self.serializer_class(user, context={'request': request})
+        user_data = user_serializer.data
+        user_data['preferences'] = profile.dump_preferences()
+        return response.Response(user_data)
+
+
+class PreferenceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = m.Preference
+        fields = ('url', 'group', 'key', 'val')
+
+
+class PreferenceViewSet(viewsets.ModelViewSet):
+    """Ower Only full access"""
+    queryset = m.Preference.objects.none()
+    serializer_class = PreferenceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return m.Preference.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 
 def login_router(request):

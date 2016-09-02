@@ -5,11 +5,18 @@ from . import models as m
 
 admin.site.unregister(User)
 
-class UserProfileInline(admin.TabularInline):
+class ProfileInline(admin.TabularInline):
     model = m.Profile
     fields = ['attrs',]
 
 
+class PreferenceInline(admin.TabularInline):
+    model = m.Preference
+    fields = ['group', 'key', 'val']
+    extra = 1
+
+
 @admin.register(User)
-class UserProfileAdmin(UserAdmin):
-    inlines = [UserProfileInline]
+class UserAdminPlus(UserAdmin):
+    inlines = [ProfileInline, PreferenceInline]
+

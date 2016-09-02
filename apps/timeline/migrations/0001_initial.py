@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('modified_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'ordering': ['id'],
+                'ordering': ['id'], 'verbose_name': 'Phase metadata', 'verbose_name_plural': 'Phase metadata'
             },
         ),
     ]

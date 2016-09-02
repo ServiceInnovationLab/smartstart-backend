@@ -10,6 +10,7 @@ tmp/
 *.db
 /static/
 /bundles/MTS/
-/bundles/ITE/
+/bundles/ITE-testing/
+/bundles/ITE-uat/
 /bundles/PRD/
 /bundles/*.tgz

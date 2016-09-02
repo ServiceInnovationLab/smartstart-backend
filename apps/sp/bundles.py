@@ -52,11 +52,10 @@ class Bundle(object):
         self.name = name or settings.BUNDLE_NAME
         assert self.name in settings.BUNDLES, 'invalid bundle name: {}'.format(self.name)
         self.config = settings.BUNDLES[self.name]
-        dir_name = self.name.split('-')[0]  # ITE-uat --> ITE
 
         self.bundles_root = path(bundles_root or settings.BUNDLES_ROOT)
         assert self.bundles_root.isdir(), self.bundles_root
-        self.path = self.bundles_root / dir_name
+        self.path = self.bundles_root / self.name
         assert self.path.isdir(), self.path
 
         self.site_url = site_url or settings.SITE_URL

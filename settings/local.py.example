@@ -1,4 +1,4 @@
-# root path to bundle files, there should be bundle dirs named MTS, ITE, PRD in it
+# root path to bundle files, bundle dirs like MTS, ITE-uat, ITE-testing and PRD should be inside
 BUNDLES_ROOT = '/home/joeg/lef/ops/files/bundles'
 
 SITE_URL = 'https://joeg.dev.boac.lef'

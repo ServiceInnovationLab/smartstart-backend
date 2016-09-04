@@ -19,4 +19,3 @@ You can see gpg passphrase for all Bundles.
     # input passphase for MTS
     tar -xzf MTS.tgz
 
-You also need to do it for ITE and PRD

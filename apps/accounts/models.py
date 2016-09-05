@@ -7,10 +7,13 @@ class Preference(models.Model):
     user = models.ForeignKey(User)
     group = models.CharField(max_length=50, default='settings')
     key = models.SlugField(max_length=50)
-    val = JSONField(blank=True)
+    val = models.CharField(max_length=200, blank=True)
 
     class Meta:
         unique_together = ('user', 'group', 'key')
+
+    def __str__(self):
+        return '[{}] {}={}'.format(self.group, self.key, self.val)
 
 
 class Profile(TimeStampedModel):

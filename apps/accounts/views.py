@@ -45,6 +45,9 @@ class PreferenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = m.Preference
         fields = ('url', 'group', 'key', 'val')
+        extra_kwargs = {
+            'val': {'required': True, 'allow_blank': True},
+        }
 
     def create(self, validated_data):
         obj, _ = m.Preference.objects.update_or_create(

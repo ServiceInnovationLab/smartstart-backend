@@ -30,6 +30,7 @@ SECRET_KEY = 'ne-oa++#f(*a=@f-5bd0$6406z8vej3@&gf(ry_d%mxd@@s9i#'
 
 INSTALLED_APPS = [
     # our own apps
+    'apps.base',
     'apps.accounts',
     'apps.sp',
     'apps.timeline',
@@ -77,10 +78,8 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated'
     ]
 }
 
@@ -97,7 +96,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'simple': {
-            'format': '%(levelname)s %(asctime)s %(name)s: %(message)s'
+            'format': '%(levelname)s %(asctime)s %(pathname)s %(funcName)s line %(lineno)s: \n%(message)s'
         },
     },
     'handlers': {
@@ -106,6 +105,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'file': {
+            'level': 'WARN',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/tmp/boac.log',
+            'formatter': 'simple',
+            'maxBytes': 10 * 1024 * 1024,  # 10 mb
+        },
     },
     'loggers': {
         'django.db.backends': {
@@ -113,7 +119,7 @@ LOGGING = {
         },
         'apps': {
             'level': 'DEBUG',
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
         },
     },
 }

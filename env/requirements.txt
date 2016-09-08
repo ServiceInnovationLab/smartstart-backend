@@ -12,3 +12,4 @@ ipdb
 uwsgi
 whitenoise
 pyOpenSSL
+markdown

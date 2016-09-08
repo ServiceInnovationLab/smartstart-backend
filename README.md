@@ -50,11 +50,14 @@ Create or update database tables:
 
 Load pre-made test users from fixture:
 
-    python manage.py loaddata test_users.json
+    python manage.py loaddata test_users
 
-credentials:
-- admin/admin
-- test/test
+users:
+- admin/admin, admin
+- test/test, staff
+- joe/test, user
+- jen/test, user
+- aaron/test, user
 
 Run this site for dev:
 

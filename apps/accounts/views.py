@@ -63,17 +63,18 @@ class PreferenceSerializer(serializers.HyperlinkedModelSerializer):
 
 class PreferenceViewSet(viewsets.ModelViewSet):
     """
-    Return a list of prefrences for current user.
+    Return a list of preferences for current user.
 
     Only ower has access to this API.
     And, owner can post data to update or create new preferences for himself.
+
     Note, there is no need to pass user in data, it defaults to current user.
 
     Post data in single mode:
 
         POST /api/preferences/
 
-        {'group': 'settings', 'key0': 'val0'}
+        {'group': 'settings', 'key': 'key0', 'val': 'val0'}
 
     Post data in bulk mode:
 
@@ -81,7 +82,7 @@ class PreferenceViewSet(viewsets.ModelViewSet):
 
         [
             {'group': 'settings', 'key': 'key0', 'val': 'val0'},
-            {'group': 'settings', 'key': 'key1', 'val': 'val1'},
+            {'group': 'settings', 'key': 'key1', 'val': 'val1'}
         ]
 
     """

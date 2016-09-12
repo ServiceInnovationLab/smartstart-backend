@@ -10,6 +10,7 @@ from lxml import etree
 from path import path
 from datetime import datetime, timedelta
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from utils import log_me
 
@@ -188,24 +189,13 @@ class Bundle(object):
 
     @property
     def key_identifier(self):
-        cer_path = self.file_path('saml_sp_cer')
-        assert cer_path.isfile
-        from OpenSSL.crypto import load_certificate, FILETYPE_PEM
-        cert_file_string = cer_path.text()
-        cert = load_certificate(FILETYPE_PEM, cert_file_string)
-        # a bytes object, e.g.: b'B5:A1:0D:AA:42:50:AE:A3:B0:36:B4:A2:A6:E6:68:29:F8:52:36:3F'
-        fingerprint_bytes_with_colon = cert.digest("sha1")
-        # a string with colon: 'B5:A1:0D:AA:42:50:AE:A3:B0:36:B4:A2:A6:E6:68:29:F8:52:36:3F'
-        fingerprint_str_with_colon = fingerprint_bytes_with_colon.decode('utf-8')
-        # B5A10DAA4250AEA3B036B4A2A6E66829F852363F
-        fingerprint_str_without_colon = fingerprint_str_with_colon.replace(':', '')
-        # bytearray(b'\xb5\xa1\r\xaaBP\xae\xa3\xb06\xb4\xa2\xa6\xe6h)\xf8R6?')
-        ba = bytearray.fromhex(fingerprint_str_without_colon)
-        # b'taENqkJQrqOwNrSipuZoKfhSNj8='
-        b64_bytes = base64.b64encode(ba)
-        # 'taENqkJQrqOwNrSipuZoKfhSNj8='
-        b64_str = b64_bytes.decode('utf-8')
-        return b64_str
+        fp_ascii = OneLogin_Saml2_Utils.calculate_x509_fingerprint(self.sp_cer_body)
+        # --> unicode str in ascii: 'b5a10daa4250aea3b036b4a2a6e66829f852363f'
+        from binascii import a2b_hex, b2a_base64
+        fp_hex = a2b_hex(fp_ascii)
+        # --> unicode str in hex: '\xb5\xa1\r\xaaBP\xae\xa3\xb06\xb4\xa2\xa6\xe6h)\xf8R6?'
+        # TODO: why \n at end?
+        return b2a_base64(fp_hex).strip() # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
 
     def render_token_issue_request(self, saml2_assertion=''):
         REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")

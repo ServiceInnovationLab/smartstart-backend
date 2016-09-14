@@ -197,7 +197,7 @@ class Bundle(object):
         # TODO: why \n at end?
         return b2a_base64(fp_hex).strip() # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
 
-    def render_token_issue_request(self, saml2_assertion=''):
+    def render_token_issue_request(self, logon_attributes_token=''):
         REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
@@ -210,7 +210,7 @@ class Bundle(object):
             'REF_IDS': REF_IDS,
             'NAMESPACES': NAMESPACES,
             'key_identifier': self.key_identifier,
-            'saml2_assertion': pretty_xml(saml2_assertion),
+            'logon_attributes_token': logon_attributes_token,
         }
         return render_to_string('sp/token_issue_tmpl.xml', context)
 
@@ -244,8 +244,8 @@ class Bundle(object):
         return etree.tostring(root_element, pretty_print=True).decode('utf-8')
 
     def send_token_issue_request(self, user):
-        saml2_assertion = user.profile.saml2_assertion
-        rendered_xml = self.render_token_issue_request(saml2_assertion=saml2_assertion)
+        logon_attributes_token = user.profile.logon_attributes_token
+        rendered_xml = self.render_token_issue_request(logon_attributes_token=logon_attributes_token)
         log_me(rendered_xml, name='token_issue_request_rendered.xml', print_me=False)
         signed_xml = self.sign_token_issue_request(rendered_xml)
         log_me(signed_xml, name='token_issue_request_signed.xml', print_me=False)

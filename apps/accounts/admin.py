@@ -7,7 +7,7 @@ admin.site.unregister(User)
 
 class ProfileInline(admin.TabularInline):
     model = m.Profile
-    fields = ['attrs',]
+    fields = ['logon_attributes_token',]
 
 
 class PreferenceInline(admin.TabularInline):

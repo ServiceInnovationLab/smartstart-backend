@@ -13,8 +13,9 @@ class SamlBackend(object):
         user, _ = User.objects.get_or_create(username=username)
         attrs = saml2_auth.get_attributes()
         if attrs:
-            log_me(str(attrs), name='saml2_attrs.log')
-            Profile.objects.update_or_create(user=user, defaults={'attrs': attrs})
+            logon_attributes_token = attrs.get('logon_attributes_token', [''])[0]
+            Profile.objects.update_or_create(user=user, defaults={'logon_attributes_token': logon_attributes_token})
+            log_me(logon_attributes_token, name='logon_attributes_token.xml')
         else:
             log.error('no attrs for logon')
         return user

@@ -27,14 +27,10 @@ class Profile(TimeStampedModel):
         (GENDER_FEMALE, 'Female'),
     )
     gender = models.CharField(max_length=10, blank=True, choices=GENDER_CHOICES)
-    attrs = JSONField(blank=True, null=True)
+    logon_attributes_token = models.TextField(blank=True)
 
     def __str__(self):
         return self.user.get_full_name()
-
-    @property
-    def saml2_assertion(self):
-        return self.attrs.get('logon_attributes_token', [''])[0] if self.attrs else ''
 
     def set_preference(self, key, val):
         Preference.objects.create_or_update(user=self.user, key=key, defaults={'val': val})

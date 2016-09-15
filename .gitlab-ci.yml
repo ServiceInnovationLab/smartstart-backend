@@ -1,4 +1,4 @@
 # vim:ff=unix ts=2 sw=2 ai expandtab
 test_env_build:
   script:
-    - curl -X POST -F token=$GITLAB_OPS_TRIGGER_TOKEN -F ref=master -F \"variables[UPSTREAM_TRIGGER]=BACKEND_PUSH\"  https://gitlab.catalyst.net.nz/api/v3/projects/8/trigger/builds
+    - curl -X POST -F token=$GITLAB_OPS_TRIGGER_TOKEN -F ref=master -F "variables[UPSTREAM_TRIGGER]=BACKEND_PUSH" https://gitlab.catalyst.net.nz/api/v3/projects/8/trigger/builds

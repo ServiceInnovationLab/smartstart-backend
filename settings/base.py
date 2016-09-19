@@ -108,7 +108,7 @@ LOGGING = {
         'file': {
             'level': 'WARN',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/tmp/boac.log',
+            'filename': '/var/log/boac.log',
             'formatter': 'simple',
             'maxBytes': 10 * 1024 * 1024,  # 10 mb
         },

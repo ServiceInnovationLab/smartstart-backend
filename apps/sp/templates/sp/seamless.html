@@ -1,0 +1,12 @@
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <body>
+        <noscript><p><strong>Note:</strong> Since your browser does not support JavaScript, you must press the Continue button once to proceed.</p></noscript>
+        <form action="{{seamless_logon_service}}" method="post">
+            <input type="hidden" name="OT" value="{{opaque_token|safe}}"/>
+            <input type="hidden" name="RelayState" value="{{relay_state}}" />
+            <noscript><input type="submit" value="Continue"/></noscript>
+        </form>
+        <script src="{% static 'sp/submit.js' %}"></script>
+    </body>
+</html>

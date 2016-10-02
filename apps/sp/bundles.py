@@ -4,7 +4,6 @@ from django.template.loader import render_to_string
 
 import uuid
 import xmlsec
-import base64
 import requests
 from lxml import etree
 from path import path
@@ -13,6 +12,8 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from utils import log_me
+import logging
+log = logging.getLogger(__name__)
 
 URL_TOKEN_ISSUE = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
 
@@ -37,11 +38,8 @@ def dt_fmt(dt):
 
 
 def pretty_xml(xml):
-    if xml:
-        et = etree.fromstring(xml)
-        return etree.tostring(et, pretty_print=True).decode('utf-8')
-    else:
-        return ''
+    element = etree.fromstring(xml)
+    return etree.tostring(element, pretty_print=True).decode('utf-8')
 
 
 class AuthnContextClassRef(object):
@@ -187,7 +185,7 @@ class Bundle(object):
         fp_hex = a2b_hex(fp_ascii)
         # --> unicode str in hex: '\xb5\xa1\r\xaaBP\xae\xa3\xb06\xb4\xa2\xa6\xe6h)\xf8R6?'
         # TODO: why \n at end?
-        return b2a_base64(fp_hex).strip() # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
+        return b2a_base64(fp_hex).strip()  # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
 
     def render_token_issue_request(self, logon_attributes_token=''):
         REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")

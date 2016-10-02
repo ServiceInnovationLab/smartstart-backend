@@ -102,6 +102,37 @@ def assertion_consumer_service(request):
     return {'code': 'ERROR', 'msg': 'ACS Failed'}
 
 
+def extract_opaque_token(xml):
+    """
+    Extract raw opaque token from response xml.
+
+    Warning: Must keep the token as it is. Do not use this way:
+
+        from lxml import etree
+        elem = etree.fromstring(xml).xpath('//saml2:Assertion', namespaces=NAMESPACES)[0]
+        return etree.tostring(elem)
+
+    xpath will add used namespaces to elem, so the token is changed.
+    """
+    match = re.search(r'<wst:RequestedSecurityToken>(.+?)</wst:RequestedSecurityToken>', xml)
+    return match.group(1).strip() if match else ''
+
+
+def escape_opaque_token(xml):
+    """
+    Escape raw token xml to put it in form field.
+
+    The RealMe Java backend use this function to escape:
+
+        org.apache.commons.lang.StringEscapeUtils.escapeHtml
+
+    which will escape quote, while most Python libraries don't do this by default.
+    So the `quote=True` arg is important.
+    """
+    from html import escape
+    return escape(xml, quote=True)
+
+
 @login_required
 @render_to('sp/error.html')
 def seamless(request):

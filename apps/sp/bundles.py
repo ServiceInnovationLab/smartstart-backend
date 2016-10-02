@@ -102,30 +102,17 @@ class Bundle(object):
     def file_text(self, field):
         return self.file_path(field).text().strip()
 
-    def file_body(self, field, begin='', end=''):
-        return self.file_text(field).lstrip(begin).rstrip(end).strip()
-
-    def cer_body(self, field):
-        begin = '-----BEGIN CERTIFICATE-----'
-        end = '-----END CERTIFICATE-----'
-        return self.file_body(field, begin=begin, end=end)
-
-    def key_body(self, field):
-        begin = '-----BEGIN PRIVATE KEY-----'
-        end = '-----END PRIVATE KEY-----'
-        return self.file_body(field, begin=begin, end=end)
-
     @property
     def idp_cer_body(self):
-        return self.cer_body('saml_idp_cer')
+        return self.file_text('saml_idp_cer')
 
     @property
     def sp_cer_body(self):
-        return self.cer_body('saml_sp_cer')
+        return self.file_text('saml_sp_cer')
 
     @property
     def sp_key_body(self):
-        return self.key_body('saml_sp_key')
+        return self.file_text('saml_sp_key')
 
     def full_url(self, url):
         return self.site_url.strip('/') + url

@@ -1,20 +1,20 @@
 import logging
-
-from django.shortcuts import redirect
+import re
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django import http
-
-from decorators import render_to
-
+from django.conf import settings
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from decorators import render_to
 from .bundles import Bundle
+from utils import log_me
 
 log = logging.getLogger(__name__)
 _saml2_settings = None
@@ -135,11 +135,22 @@ def escape_opaque_token(xml):
 
 @login_required
 @render_to('sp/error.html')
-def seamless(request):
-    user = request.user
+def seamless(request, target_sp=''):
     bundle = Bundle()
-    r = bundle.send_token_issue_request(user=user)
-    return {
-        'code': 'seamless',
-        'msg': r.content.decode('utf-8')
-    }
+    r = bundle.send_opaque_token_request(request.user, target_sp)
+    xml = r.content.decode(r.encoding)
+    log_me(xml, name='opaque_token_response.xml')
+    opaque_token_raw = extract_opaque_token(xml)
+    assert opaque_token_raw in xml
+    log_me(opaque_token_raw, name='opaque_token_raw.xml')
+    opaque_token_escaped = escape_opaque_token(opaque_token_raw)
+    log_me(opaque_token_escaped, name='opaque_token_escaped.xml')
+    response = render(request, 'sp/seamless.html', context={
+        'relay_state': bundle.config.get('target_sps', {}).get(target_sp, {}).get('relay_state', ''),
+        'opaque_token': opaque_token_escaped,
+        'seamless_logon_service': bundle.config['seamless_logon_service'],
+    })
+    content = response.content.decode('utf-8')
+    assert opaque_token_escaped in content
+    log_me(content, name='seamless_logon_request.xml')
+    return response

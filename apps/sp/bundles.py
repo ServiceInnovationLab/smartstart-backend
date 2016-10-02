@@ -19,12 +19,17 @@ URL_TOKEN_ISSUE = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
 NAMESPACES = {
     'ds': 'http://www.w3.org/2000/09/xmldsig#',
     'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
-    'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
+    'env': 'http://www.w3.org/2003/05/soap-envelope',
     'soap': 'http://www.w3.org/2003/05/soap-envelope',
     'wsa': "http://www.w3.org/2005/08/addressing",
+    'wsp': 'http://schemas.xmlsoap.org/ws/2004/09/policy',
     'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+    'wsse11': 'http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0',
     'wst': "http://docs.oasis-open.org/ws-sx/ws-trust/200512",
+    'wst14': "http://docs.oasis-open.org/ws-sx/ws-trust/200802",
     'wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+    'saml2': 'urn:oasis:names:tc:SAML:2.0:assertion',
+    'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
 }
 
 def dt_fmt(dt):

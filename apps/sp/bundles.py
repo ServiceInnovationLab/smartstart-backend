@@ -4,7 +4,6 @@ from django.template.loader import render_to_string
 
 import uuid
 import xmlsec
-import base64
 import requests
 from lxml import etree
 from path import path
@@ -13,18 +12,25 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from utils import log_me
+import logging
+log = logging.getLogger(__name__)
 
 URL_TOKEN_ISSUE = 'https://ws.ite.realme.govt.nz/iCMS/Issue_v1_1'
 
 NAMESPACES = {
     'ds': 'http://www.w3.org/2000/09/xmldsig#',
     'ec': "http://www.w3.org/2001/10/xml-exc-c14n#",
-    'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
+    'env': 'http://www.w3.org/2003/05/soap-envelope',
     'soap': 'http://www.w3.org/2003/05/soap-envelope',
     'wsa': "http://www.w3.org/2005/08/addressing",
+    'wsp': 'http://schemas.xmlsoap.org/ws/2004/09/policy',
     'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+    'wsse11': 'http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0',
     'wst': "http://docs.oasis-open.org/ws-sx/ws-trust/200512",
+    'wst14': "http://docs.oasis-open.org/ws-sx/ws-trust/200802",
     'wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+    'saml2': 'urn:oasis:names:tc:SAML:2.0:assertion',
+    'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
 }
 
 def dt_fmt(dt):
@@ -32,11 +38,8 @@ def dt_fmt(dt):
 
 
 def pretty_xml(xml):
-    if xml:
-        et = etree.fromstring(xml)
-        return etree.tostring(et, pretty_print=True).decode('utf-8')
-    else:
-        return ''
+    element = etree.fromstring(xml)
+    return etree.tostring(element, pretty_print=True).decode('utf-8')
 
 
 class AuthnContextClassRef(object):
@@ -79,6 +82,9 @@ class Bundle(object):
     def __str__(self):
         return self.name
 
+    def get_target_sp_entity_id(self, target_sp):
+        return self.config.get('target_sps', {}).get(target_sp, {}).get('entity_id', '')
+
     def check_cer_and_key(self, prefix):
         from subprocess import check_output
         cer_field = '{}_cer'.format(prefix)
@@ -97,30 +103,17 @@ class Bundle(object):
     def file_text(self, field):
         return self.file_path(field).text().strip()
 
-    def file_body(self, field, begin='', end=''):
-        return self.file_text(field).lstrip(begin).rstrip(end).strip()
-
-    def cer_body(self, field):
-        begin = '-----BEGIN CERTIFICATE-----'
-        end = '-----END CERTIFICATE-----'
-        return self.file_body(field, begin=begin, end=end)
-
-    def key_body(self, field):
-        begin = '-----BEGIN PRIVATE KEY-----'
-        end = '-----END PRIVATE KEY-----'
-        return self.file_body(field, begin=begin, end=end)
-
     @property
     def idp_cer_body(self):
-        return self.cer_body('saml_idp_cer')
+        return self.file_text('saml_idp_cer')
 
     @property
     def sp_cer_body(self):
-        return self.cer_body('saml_sp_cer')
+        return self.file_text('saml_sp_cer')
 
     @property
     def sp_key_body(self):
-        return self.key_body('saml_sp_key')
+        return self.file_text('saml_sp_key')
 
     def full_url(self, url):
         return self.site_url.strip('/') + url
@@ -195,33 +188,32 @@ class Bundle(object):
         fp_hex = a2b_hex(fp_ascii)
         # --> unicode str in hex: '\xb5\xa1\r\xaaBP\xae\xa3\xb06\xb4\xa2\xa6\xe6h)\xf8R6?'
         # TODO: why \n at end?
-        return b2a_base64(fp_hex).strip() # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
+        return b2a_base64(fp_hex).strip()  # 'taENqkJQrqOwNrSipuZoKfhSNj8=\n'
 
-    def render_token_issue_request(self, logon_attributes_token=''):
-        REF_IDS = ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp")
+    def render_opaque_token_request(self, logon_attributes_token='', target_sp_entity_id=''):
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
-        context = {
-            'conf': self,
-            'created': dt_fmt(created),
-            'expires': dt_fmt(expires),
-            'message_id': str(uuid.uuid4()),
-            'to': URL_TOKEN_ISSUE,
-            'REF_IDS': REF_IDS,
-            'NAMESPACES': NAMESPACES,
-            'key_identifier': self.key_identifier,
-            'logon_attributes_token': logon_attributes_token,
-        }
-        return render_to_string('sp/token_issue_tmpl.xml', context)
+        return render_to_string(
+            'sp/opaque_token_request_tmpl.xml',
+            context = {
+                'conf': self,
+                'created': dt_fmt(created),
+                'expires': dt_fmt(expires),
+                'message_id': str(uuid.uuid4()),
+                'to': URL_TOKEN_ISSUE,
+                'REF_IDS': ("Id-Action", "Id-MessageID", "Id-To", "Id-ReplyTo", "Id-Body", "Id-Timestamp"),
+                'NAMESPACES': NAMESPACES,
+                'key_identifier': self.key_identifier,
+                'logon_attributes_token': logon_attributes_token,
+                'target_sp_entity_id': target_sp_entity_id,
+            }
+        )
 
-    def sign_token_issue_request(self, rendered_xml):
-        # etree.parse will return ElementTree, then you need to call getroot on it
-        # fromstring will return the root directly.
-        root_element = etree.fromstring(rendered_xml.encode('utf-8'))
+    def sign_opaque_token_request(self, rendered_xml):
+        root_element = etree.fromstring(rendered_xml)
         xmlsec.tree.add_ids(root_element, ["Id"])  # important!
-        header_element = root_element.find('soap:Header', namespaces=NAMESPACES)
-        security_element = header_element.find('wsse:Security', namespaces=NAMESPACES)
-        signature_node = security_element.find('ds:Signature', namespaces=NAMESPACES)
+        # refer to xml/opaque_token_request_unsigned.xml for example
+        signature_element = root_element.xpath('/soap:Envelope/soap:Header/wsse:Security/ds:Signature', namespaces=NAMESPACES)[0]
 
         key_path = self.file_path('saml_sp_key')
         assert key_path.isfile
@@ -239,24 +231,49 @@ class Bundle(object):
         ctx = xmlsec.SignatureContext()
         ctx.key = key
         # Sign the template.
-        ctx.sign(signature_node)
+        ctx.sign(signature_element)
         # return a utf-8 encoded byte str
+        # refer to xml/opaque_token_request_signed.xml for example
         return etree.tostring(root_element, pretty_print=True).decode('utf-8')
 
-    def send_token_issue_request(self, user):
+    def verify_opaque_token_response(self, signed_xml):
+        root_element = etree.fromstring(signed_xml)
+        xmlsec.tree.add_ids(root_element, ["Id"])  # important!
+        signature_element = root_element.xpath('/soap:Envelope/soap:Header/wsse:Security/ds:Signature', namespaces=NAMESPACES)[0]
+
+        cer_path = self.file_path('saml_idp_cer')
+        assert cer_path.isfile
+        key = xmlsec.Key.from_file(cer_path, xmlsec.KeyFormat.CERT_PEM)
+        assert key is not None
+
+        # Create a digital signature context (no key manager is needed).
+        ctx = xmlsec.SignatureContext()
+        ctx.key = key
+
+        from xmlsec.error import VerificationError
+        try:
+            # no return value, raise exception if failed
+            ctx.verify(signature_element)
+        except VerificationError as e:
+            log.error('verify_opaque_token_response failed: {}'.format(e))
+            return False
+        return True
+
+    def send_opaque_token_request(self, user, target_sp):
         logon_attributes_token = user.profile.logon_attributes_token
-        rendered_xml = self.render_token_issue_request(logon_attributes_token=logon_attributes_token)
-        log_me(rendered_xml, name='token_issue_request_rendered.xml', print_me=False)
-        signed_xml = self.sign_token_issue_request(rendered_xml)
-        log_me(signed_xml, name='token_issue_request_signed.xml', print_me=False)
+        target_sp_entity_id = self.get_target_sp_entity_id(target_sp)
+        rendered_xml = self.render_opaque_token_request(
+            logon_attributes_token=logon_attributes_token,
+            target_sp_entity_id=target_sp_entity_id,
+        )
+        log_me(rendered_xml, name='opaque_token_request_unsigned.xml', print_me=False)
+        signed_xml = self.sign_opaque_token_request(rendered_xml)
+        log_me(signed_xml, name='opaque_token_request.xml', print_me=False)
 
         headers = {'content-type': 'text/xml'}
         cert = (
             self.file_path('mutual_ssl_sp_cer'),
             self.file_path('mutual_ssl_sp_key'),
         )
-        r = requests.post(URL_TOKEN_ISSUE, data=signed_xml, headers=headers, cert=cert)
-        response_xml = pretty_xml(r.content.decode('utf-8'))
-        log_me(response_xml, name='token_issue_response.xml')
-        return r
+        return requests.post(URL_TOKEN_ISSUE, data=signed_xml, headers=headers, cert=cert)
 

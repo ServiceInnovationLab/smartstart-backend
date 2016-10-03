@@ -13,5 +13,6 @@ class Command(BaseCommand):
         user_id = options['user_id']
         user = User.objects.get(id=user_id)
         b = Bundle(site_url=options.get('site_url'))
-        b.send_token_issue_request(user)
+        r = b.send_opaque_token_request(user)
+        self.stdout.write(r.content.decode('utf-8'))
 

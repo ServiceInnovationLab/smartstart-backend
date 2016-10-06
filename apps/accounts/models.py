@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from annoying.fields import AutoOneToOneField, JSONField
+from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
 
 class Preference(models.Model):

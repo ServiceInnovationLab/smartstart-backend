@@ -12,7 +12,7 @@ from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
-from decorators import render_to
+from apps.base.decorators import render_to
 from .bundles import Bundle
 from utils import log_me
 

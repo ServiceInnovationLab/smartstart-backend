@@ -1,10 +1,13 @@
-# root path to bundle files, bundle dirs like MTS, ITE-uat, ITE-testing and PRD should be inside
+# copy this file to local.py and edit
+
+# example for dev
 BUNDLES_ROOT = '/home/joeg/lef/ops/files/bundles'
 
 SITE_URL = 'https://joeg.dev.boac.lef'
 
 BUNDLE_NAME = 'MTS'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
 
+# example for prd
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

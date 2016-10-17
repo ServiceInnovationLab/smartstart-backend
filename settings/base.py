@@ -196,3 +196,30 @@ DATABASES = {
         'NAME':  '/tmp/db.sqlite3',
     }
 }
+
+
+############# BEGIN OVERRIDE #############
+# settings may need to override in local.py
+# principle: use production as default
+DEBUG = False
+SESSION_COOKIE_SECURE = True
+
+STATIC_ROOT = '/srv/www/smartstart/static/'
+
+SITE_DOMAIN = 'smartstart.services.govt.nz'
+SITE_URL = 'https://{}'.format(SITE_DOMAIN)
+
+BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
+
+############# END OVERRIDE #############
+
+try:
+    from .local import *  # noqa
+except ImportError:
+    pass
+
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['.{}'.format(SITE_DOMAIN)]
+

@@ -15,8 +15,6 @@ TIME_ZONE = 'Pacific/Auckland'
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / 'static'
-
 ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
@@ -203,13 +201,13 @@ DATABASES = {
 # principle: use production as default
 DEBUG = False
 SESSION_COOKIE_SECURE = True
-
-STATIC_ROOT = '/srv/www/smartstart/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
+BUNDLES_ROOT = '/srv/bundles'
 
 ############# END OVERRIDE #############
 

@@ -57,7 +57,7 @@ def login(request):
     return redirect(url)
 
 
-@render_to('sp/metadata.html', content_type='text/plain')
+@render_to('sp/metadata.xml', content_type='text/plain')
 def metadata(request):
     return {
         'conf': Bundle()

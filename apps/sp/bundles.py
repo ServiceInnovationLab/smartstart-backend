@@ -177,7 +177,7 @@ class Bundle(object):
             }
         }
 
-    def render(self, template='sp/SP_PostBinding.xml'):
+    def render(self, template='sp/metadata.xml'):
         return render_to_string(template, {'conf': self})
 
     @property

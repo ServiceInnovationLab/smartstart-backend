@@ -42,6 +42,14 @@ def pretty_xml(xml):
     return etree.tostring(element, pretty_print=True).decode('utf-8')
 
 
+def get_file_body(text):
+    import os
+    lines = text.strip().splitlines()
+    start = 1 if lines[0].startswith('-----BEGIN ') else 0
+    end = -1 if lines[-1].startswith('-----END ') else None
+    return os.linesep.join(lines[start:end])
+
+
 class AuthnContextClassRef(object):
     LowStrength = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength'
     ModStrength = 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:ModStrength'
@@ -103,17 +111,20 @@ class Bundle(object):
     def file_text(self, field):
         return self.file_path(field).text().strip()
 
+    def file_body(self, field):
+        return get_file_body(self.file_text(field))
+
     @property
     def idp_cer_body(self):
-        return self.file_text('saml_idp_cer')
+        return self.file_body('saml_idp_cer')
 
     @property
     def sp_cer_body(self):
-        return self.file_text('saml_sp_cer')
+        return self.file_body('saml_sp_cer')
 
     @property
     def sp_key_body(self):
-        return self.file_text('saml_sp_key')
+        return self.file_body('saml_sp_key')
 
     def full_url(self, url):
         return self.site_url.strip('/') + url
@@ -177,7 +188,7 @@ class Bundle(object):
             }
         }
 
-    def render(self, template='sp/SP_PostBinding.xml'):
+    def render(self, template='sp/metadata.xml'):
         return render_to_string(template, {'conf': self})
 
     @property

@@ -57,14 +57,11 @@ def login(request):
     return redirect(url)
 
 
+@render_to('sp/metadata.html', content_type='text/plain')
 def metadata(request):
-    metadata = get_saml2_settings().get_sp_metadata()
-    errors = get_saml2_settings().validate_metadata(metadata)
-
-    if errors:
-        return http.HttpResponseServerError(content=', '.join(errors))
-    else:
-        return http.HttpResponse(content=metadata, content_type='text/plain')
+    return {
+        'conf': Bundle()
+    }
 
 
 @csrf_exempt

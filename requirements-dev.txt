@@ -1,0 +1,16 @@
+Cython
+Django
+django-extensions
+django-annoying
+djangorestframework
+python-dateutil
+pytz
+python3-saml
+path.py
+requests
+ipython
+ipdb
+uWSGI
+whitenoise
+pyOpenSSL
+Markdown

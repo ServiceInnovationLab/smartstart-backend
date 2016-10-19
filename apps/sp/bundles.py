@@ -43,11 +43,10 @@ def pretty_xml(xml):
 
 
 def get_file_body(text):
-    import os
     lines = text.strip().splitlines()
     start = 1 if lines[0].startswith('-----BEGIN ') else 0
     end = -1 if lines[-1].startswith('-----END ') else None
-    return os.linesep.join(lines[start:end])
+    return ''.join(lines[start:end])
 
 
 class AuthnContextClassRef(object):

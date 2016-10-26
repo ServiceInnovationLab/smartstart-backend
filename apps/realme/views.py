@@ -6,7 +6,6 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django import http
-from django.conf import settings
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
@@ -57,7 +56,7 @@ def login(request):
     return redirect(url)
 
 
-@render_to('sp/metadata.xml', content_type='text/plain')
+@render_to('realme/metadata.xml', content_type='text/plain')
 def metadata(request):
     return {
         'conf': Bundle()
@@ -65,7 +64,7 @@ def metadata(request):
 
 
 @csrf_exempt
-@render_to('sp/error.html')
+@render_to('realme/error.html')
 def assertion_consumer_service(request):
     if request.method != 'POST':
         return http.HttpResponseBadRequest()
@@ -131,7 +130,7 @@ def escape_opaque_token(xml):
 
 
 @login_required
-@render_to('sp/error.html')
+@render_to('realme/error.html')
 def seamless(request, target_sp=''):
     bundle = Bundle()
     r = bundle.send_opaque_token_request(request.user, target_sp)
@@ -142,7 +141,7 @@ def seamless(request, target_sp=''):
     log_me(opaque_token_raw, name='opaque_token_raw.xml')
     opaque_token_escaped = escape_opaque_token(opaque_token_raw)
     log_me(opaque_token_escaped, name='opaque_token_escaped.xml')
-    response = render(request, 'sp/seamless.html', context={
+    response = render(request, 'realme/seamless.html', context={
         'relay_state': bundle.config.get('target_sps', {}).get(target_sp, {}).get('relay_state', ''),
         'opaque_token': opaque_token_escaped,
         'seamless_logon_service': bundle.config['seamless_logon_service'],

@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     # our own apps
     'apps.base',
     'apps.accounts',
-    'apps.sp',
+    'apps.realme',
     'apps.timeline',
 
     # 3rd party apps
@@ -87,7 +87,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'apps.sp.backends.SamlBackend',
+    'apps.realme.backends.SamlBackend',
 )
 
 LOGIN_URL = '/login/'

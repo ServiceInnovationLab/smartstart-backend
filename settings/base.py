@@ -2,6 +2,7 @@ from os.path import dirname, abspath
 from path import path
 
 BASE_DIR = path(dirname(dirname(abspath(__file__))))
+PROJ_NAME = 'smartstart'
 
 USE_I18N = True
 
@@ -92,40 +93,6 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '%(levelname)s %(asctime)s %(pathname)s %(funcName)s line %(lineno)s: \n%(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'file': {
-            'level': 'WARN',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/boac.log',
-            'formatter': 'simple',
-            'maxBytes': 10 * 1024 * 1024,  # 10 mb
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'WARN',
-        },
-        'apps': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'file'],
-        },
-    },
-}
-
-
 BUNDLES = {
     'MTS': {
         'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
@@ -186,28 +153,28 @@ BUNDLES = {
     },
 }
 
-BUNDLES_ROOT = BASE_DIR.parent/'bundles'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  '/tmp/db.sqlite3',
+        'NAME':  '/tmp/{}.db'.format(PROJ_NAME)
     }
 }
 
+BUNDLES_ROOT = BASE_DIR/'bundles'
+STATIC_ROOT = BASE_DIR/'static'
 
 ############# BEGIN OVERRIDE #############
 # settings may need to override in local.py
-# principle: use production as default
+# principle: use production as default if possible
 DEBUG = False
 SESSION_COOKIE_SECURE = True
-STATIC_ROOT = BASE_DIR / 'static'
 
 SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
-BUNDLES_ROOT = '/srv/bundles'
+
+LOG_FILE = '/var/log/boac.log'
 
 ############# END OVERRIDE #############
 
@@ -220,4 +187,39 @@ if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ['.{}'.format(SITE_DOMAIN)]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(pathname)s %(funcName)s line %(lineno)s: \n%(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'WARN',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_FILE,
+            'formatter': 'simple',
+            'maxBytes': 10 * 1024 * 1024,  # 10 mb
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'WARN',
+        },
+        'apps': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file'],
+        },
+    },
+}
+
 

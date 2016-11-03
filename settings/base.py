@@ -168,6 +168,7 @@ STATIC_ROOT = BASE_DIR/'static'
 # principle: use production as default if possible
 DEBUG = False
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
@@ -221,5 +222,3 @@ LOGGING = {
         },
     },
 }
-
-

@@ -1,3 +1,4 @@
+from django.conf import settings
 import logging
 log = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ class UserCookieMiddleWare(object):
         if hasattr(request, 'user'):
             cookie_name = 'is_authenticated'
             if request.user.is_authenticated() and request.COOKIES.get(cookie_name) != 'true':
-                response.set_cookie(cookie_name, 'true')
+                response.set_cookie(cookie_name, 'true', secure=settings.SESSION_COOKIE_SECURE)
             elif not request.user.is_authenticated() and request.COOKIES.get(cookie_name) == 'true':
                 # else if if no user and cookie remove user cookie, logout
                 response.delete_cookie(cookie_name)

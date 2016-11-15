@@ -1,5 +1,25 @@
+import time
+from django.test import override_settings
 from apps.base.tests import BaseTestCase
 from apps.accounts.models import Preference
+
+
+class SessionTestCase(BaseTestCase):
+    def setUp(self):
+        BaseTestCase.setUp(self)
+
+    @override_settings(SESSION_COOKIE_AGE_SAVE=1)
+    def test_session_timeout(self):
+        self.login('test')
+        time.sleep(2)
+
+        # should not timeout for get
+        self.get_json(self.api_me, expected=200)
+
+        # should timeout for post
+        obj = {'group': 'settings', 'key': 'key0', 'val': 'val0'}
+        json = self.post_json(self.api_preferences, obj, expected=401)
+
 
 class PreferenceTestCase(BaseTestCase):
 
@@ -47,4 +67,3 @@ class PreferenceTestCase(BaseTestCase):
         self.login('test')
         obj = {'group': 'settings', 'key': 'key0', 'val': ''}
         self.post_json(self.api_preferences, obj, expected=201)
-

@@ -222,3 +222,6 @@ LOGGING = {
         },
     },
 }
+
+# cookie to exchange info between backend and frontend
+EXCHANGE_COOKIE_NAME = 'is_authenticated'

@@ -13,7 +13,7 @@ class UserCookieMiddleWare(object):
     def process_response(self, request, response):
         # if user and no cookie, set cookie
         if hasattr(request, 'user'):
-            cookie_name = 'is_authenticated'
+            cookie_name = settings.EXCHANGE_COOKIE_NAME
             if request.user.is_authenticated() and request.COOKIES.get(cookie_name) != 'true':
                 response.set_cookie(cookie_name, 'true', secure=settings.SESSION_COOKIE_SECURE)
             elif not request.user.is_authenticated() and request.COOKIES.get(cookie_name) == 'true':

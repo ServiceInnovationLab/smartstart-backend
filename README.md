@@ -77,7 +77,7 @@ Then make sure following settings are right:
 
 Then go to this url:
 
-    /sp/metadata/
+    /realme/metadata/
 
 Save page to local as a text file, then upload it to:
 

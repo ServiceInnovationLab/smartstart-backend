@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     # our own apps
     'apps.base',
     'apps.accounts',
-    'apps.sp',
+    'apps.realme',
     'apps.timeline',
 
     # 3rd party apps
@@ -87,7 +87,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'apps.sp.backends.SamlBackend',
+    'apps.realme.backends.SamlBackend',
 )
 
 LOGIN_URL = '/login/'
@@ -113,7 +113,7 @@ BUNDLES = {
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
         'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
-        'site_url': 'https://uat.bundle.services.govt.nz',
+        'site_url': 'https://uat.smartstart.services.govt.nz',
         'saml_sp_cer': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.crt',
         'saml_sp_key': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.private.key',
         'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.crt',
@@ -126,7 +126,7 @@ BUNDLES = {
         'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
         'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
-        'site_url': 'https://testing.bundle.services.govt.nz',
+        'site_url': 'https://testing.smartstart.services.govt.nz',
         'saml_sp_cer': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.crt',
         'saml_sp_key': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.private.key',
         'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.crt',
@@ -145,7 +145,7 @@ BUNDLES = {
         'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
         'seamless_logon_service': 'TODO',
-        'site_url': 'https://bundle.services.govt.nz',
+        'site_url': 'https://smartstart.services.govt.nz',
         'saml_sp_cer': 'sa.saml.sig.bundle.services.govt.nz.crt',
         'saml_sp_key': 'sa.saml.sig.bundle.services.govt.nz.private.key',
         'mutual_ssl_sp_cer': 'sa.mutual.sig.bundle.services.govt.nz.crt',
@@ -168,6 +168,7 @@ STATIC_ROOT = BASE_DIR/'static'
 # principle: use production as default if possible
 DEBUG = False
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
@@ -222,4 +223,5 @@ LOGGING = {
     },
 }
 
-
+# cookie to exchange info between backend and frontend
+EXCHANGE_COOKIE_NAME = 'is_authenticated'

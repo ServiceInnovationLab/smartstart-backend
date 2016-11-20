@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import login as auth_login
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
-from apps.sp.views import login as sp_login
+from apps.realme.views import login as realme_login
 from . import models as m
 
 import logging
@@ -110,6 +110,6 @@ def login_router(request):
     BUNDLE_NAME = getattr(settings, 'BUNDLE_NAME', 'FAKE')
     log.info('current BUNDLE_NAME: {}'.format(BUNDLE_NAME))
     if BUNDLE_NAME in settings.BUNDLES:
-        return sp_login(request)
+        return realme_login(request)
     else:
         return auth_login(request)

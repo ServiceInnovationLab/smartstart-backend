@@ -1,0 +1,107 @@
+<md:EntityDescriptor entityID="https://bundle.services.govt.nz/sp/testing" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:query="urn:oasis:names:tc:SAML:metadata:ext:query" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+	<md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+		<md:KeyDescriptor use="signing">
+			<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:X509Data>
+					<ds:X509Certificate>
+MIIGljCCBX6gAwIBAgIQDWwYp+GOVL04Ic9qfHNbADANBgkqhkiG9w0BAQsFADBC
+MQswCQYDVQQGEwJVUzEWMBQGA1UEChMNR2VvVHJ1c3QgSW5jLjEbMBkGA1UEAxMS
+UmFwaWRTU0wgU0hBMjU2IENBMB4XDTE2MDgwMzAwMDAwMFoXDTE5MDgwMzIzNTk1
+OVowOjE4MDYGA1UEAwwvaXRlLnNhLnNhbWwuc2lnLnRlc3RpbmcuYnVuZGxlLnNl
+cnZpY2VzLmdvdnQubnowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDL
+KVQXBDiNtatc3U5FbH86XGRW+7uCxnSe8nF60ND79sgfMKyGuBTb7HvS55wBebN4
+10DD1c4vSdzdPWcrr3ukfUHm9XqhEIEH8k0rbO1NCswoW2n0MejDzMMTxRC8Xuq3
+xjhjrmK5VcwT8FE7q3CUmKldsFhldxwxiNlYWtKKkbksbcJnryaqkpT/4gF3Umrg
+yiwRjcLsgQ1MDq+5hL6FiUpvtusozrpYEzk/0N8G2gl5cYXEOJDdVWAlpc3EjFRb
+6up9L/wJbP7mBfhFM/RemIJH/fjWsV19jojQbBwV9jugK+VNEqb3YAOuYvrNY3gz
+q9BIF3E29bDqIzneoHXZAgMBAAGjggOOMIIDijA6BgNVHREEMzAxgi9pdGUuc2Eu
+c2FtbC5zaWcudGVzdGluZy5idW5kbGUuc2VydmljZXMuZ292dC5uejAJBgNVHRME
+AjAAMCsGA1UdHwQkMCIwIKAeoByGGmh0dHA6Ly9ncC5zeW1jYi5jb20vZ3AuY3Js
+MG8GA1UdIARoMGYwZAYGZ4EMAQIBMFowKgYIKwYBBQUHAgEWHmh0dHBzOi8vd3d3
+LnJhcGlkc3NsLmNvbS9sZWdhbDAsBggrBgEFBQcCAjAgDB5odHRwczovL3d3dy5y
+YXBpZHNzbC5jb20vbGVnYWwwHwYDVR0jBBgwFoAUl8InUJ7CyewMiDLIfK3ipgFP
+2m8wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcD
+AjBXBggrBgEFBQcBAQRLMEkwHwYIKwYBBQUHMAGGE2h0dHA6Ly9ncC5zeW1jZC5j
+b20wJgYIKwYBBQUHMAKGGmh0dHA6Ly9ncC5zeW1jYi5jb20vZ3AuY3J0MIIB+AYK
+KwYBBAHWeQIEAgSCAegEggHkAeIAdwDd6x0reg1PpiCLga2BaHB+Lo6dAdVciI09
+EcTNtuy+zAAAAVZOnYDeAAAEAwBIMEYCIQDqlvxvN5neauz3qkVT4iJgsWvngKbd
+62PJ1I2r3UqrhwIhAKL+feN2tnXg+HLO2mCph0OycI/gAEc0XtYAuhSGmj0xAHYA
+pLkJkLQYWBSHuxOizGdwCjw1mAT5G9+443fNDsgN3BAAAAFWTp2BAwAABAMARzBF
+AiAduPOGtHtom26xZmCBe0pMhAtfJPSV+PhCQXw3L+7bNQIhAP8ziaKVBVKl1wyX
+PGF//87e2ArZLaS65kZjPsciWt++AHYAaPaY+B9kgr46jO65KB1M/HFRXWeT1ETR
+Cmesu09P+8QAAAFWTp2A/AAABAMARzBFAiEAsKJHyFHg/ckG5qG1LBUVtU34KSvu
+okP3pQytRrZ/hfgCIGpMT4VEpjapGxpMNQR2DZndnNuhwDcZmNdy7KrvX/BhAHcA
+7ku9t3XOYLrhQmkfq+GeZqMPfl+wctiDAMR7iXqo/csAAAFWTp2C2wAABAMASDBG
+AiEAz9Xpm5O6/c2tTfx/9o0EIGUL3PHoXPTRULpum0h+ZfsCIQCUOlKQOtLSRujB
+nHN6AMqveKWbRX9XxOpMST8jbX06hDANBgkqhkiG9w0BAQsFAAOCAQEAfddlVKXV
+buv3KMYCx6behkrA3P+et75C8FAAYEgbB3cZsLHiUCQ6HjznWDeWRyfcnzX/wAqv
+AMsQgld+P17FgR1TSNTYjHLs4wajSi9aHjQaewUuXqaDsKxP4WANdUGMs2s1WNyk
+D52qJR8eldqr4CvcNQ9KyH3hrAGxAWxCATVtBrk3KOx1kb+s2k0KD9CGu5zTPfTw
+QzCn/6ihkVu83EeJz1I++392P0krkdDnsEtR6VgNB62mlMBhix7+Lljuu17Yyo+P
+N//aKLftN/qfxadaEXc19ZXG7WFNlQF8ghKJqXRW1agpMD1n8acmYMAjqsT07oBH
+Zxe6FtKFICHnLw==
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+		<md:KeyDescriptor use="encryption">
+			<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:X509Data>
+					<ds:X509Certificate>
+MIIGljCCBX6gAwIBAgIQDWwYp+GOVL04Ic9qfHNbADANBgkqhkiG9w0BAQsFADBC
+MQswCQYDVQQGEwJVUzEWMBQGA1UEChMNR2VvVHJ1c3QgSW5jLjEbMBkGA1UEAxMS
+UmFwaWRTU0wgU0hBMjU2IENBMB4XDTE2MDgwMzAwMDAwMFoXDTE5MDgwMzIzNTk1
+OVowOjE4MDYGA1UEAwwvaXRlLnNhLnNhbWwuc2lnLnRlc3RpbmcuYnVuZGxlLnNl
+cnZpY2VzLmdvdnQubnowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDL
+KVQXBDiNtatc3U5FbH86XGRW+7uCxnSe8nF60ND79sgfMKyGuBTb7HvS55wBebN4
+10DD1c4vSdzdPWcrr3ukfUHm9XqhEIEH8k0rbO1NCswoW2n0MejDzMMTxRC8Xuq3
+xjhjrmK5VcwT8FE7q3CUmKldsFhldxwxiNlYWtKKkbksbcJnryaqkpT/4gF3Umrg
+yiwRjcLsgQ1MDq+5hL6FiUpvtusozrpYEzk/0N8G2gl5cYXEOJDdVWAlpc3EjFRb
+6up9L/wJbP7mBfhFM/RemIJH/fjWsV19jojQbBwV9jugK+VNEqb3YAOuYvrNY3gz
+q9BIF3E29bDqIzneoHXZAgMBAAGjggOOMIIDijA6BgNVHREEMzAxgi9pdGUuc2Eu
+c2FtbC5zaWcudGVzdGluZy5idW5kbGUuc2VydmljZXMuZ292dC5uejAJBgNVHRME
+AjAAMCsGA1UdHwQkMCIwIKAeoByGGmh0dHA6Ly9ncC5zeW1jYi5jb20vZ3AuY3Js
+MG8GA1UdIARoMGYwZAYGZ4EMAQIBMFowKgYIKwYBBQUHAgEWHmh0dHBzOi8vd3d3
+LnJhcGlkc3NsLmNvbS9sZWdhbDAsBggrBgEFBQcCAjAgDB5odHRwczovL3d3dy5y
+YXBpZHNzbC5jb20vbGVnYWwwHwYDVR0jBBgwFoAUl8InUJ7CyewMiDLIfK3ipgFP
+2m8wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcD
+AjBXBggrBgEFBQcBAQRLMEkwHwYIKwYBBQUHMAGGE2h0dHA6Ly9ncC5zeW1jZC5j
+b20wJgYIKwYBBQUHMAKGGmh0dHA6Ly9ncC5zeW1jYi5jb20vZ3AuY3J0MIIB+AYK
+KwYBBAHWeQIEAgSCAegEggHkAeIAdwDd6x0reg1PpiCLga2BaHB+Lo6dAdVciI09
+EcTNtuy+zAAAAVZOnYDeAAAEAwBIMEYCIQDqlvxvN5neauz3qkVT4iJgsWvngKbd
+62PJ1I2r3UqrhwIhAKL+feN2tnXg+HLO2mCph0OycI/gAEc0XtYAuhSGmj0xAHYA
+pLkJkLQYWBSHuxOizGdwCjw1mAT5G9+443fNDsgN3BAAAAFWTp2BAwAABAMARzBF
+AiAduPOGtHtom26xZmCBe0pMhAtfJPSV+PhCQXw3L+7bNQIhAP8ziaKVBVKl1wyX
+PGF//87e2ArZLaS65kZjPsciWt++AHYAaPaY+B9kgr46jO65KB1M/HFRXWeT1ETR
+Cmesu09P+8QAAAFWTp2A/AAABAMARzBFAiEAsKJHyFHg/ckG5qG1LBUVtU34KSvu
+okP3pQytRrZ/hfgCIGpMT4VEpjapGxpMNQR2DZndnNuhwDcZmNdy7KrvX/BhAHcA
+7ku9t3XOYLrhQmkfq+GeZqMPfl+wctiDAMR7iXqo/csAAAFWTp2C2wAABAMASDBG
+AiEAz9Xpm5O6/c2tTfx/9o0EIGUL3PHoXPTRULpum0h+ZfsCIQCUOlKQOtLSRujB
+nHN6AMqveKWbRX9XxOpMST8jbX06hDANBgkqhkiG9w0BAQsFAAOCAQEAfddlVKXV
+buv3KMYCx6behkrA3P+et75C8FAAYEgbB3cZsLHiUCQ6HjznWDeWRyfcnzX/wAqv
+AMsQgld+P17FgR1TSNTYjHLs4wajSi9aHjQaewUuXqaDsKxP4WANdUGMs2s1WNyk
+D52qJR8eldqr4CvcNQ9KyH3hrAGxAWxCATVtBrk3KOx1kb+s2k0KD9CGu5zTPfTw
+QzCn/6ihkVu83EeJz1I++392P0krkdDnsEtR6VgNB62mlMBhix7+Lljuu17Yyo+P
+N//aKLftN/qfxadaEXc19ZXG7WFNlQF8ghKJqXRW1agpMD1n8acmYMAjqsT07oBH
+Zxe6FtKFICHnLw==
+					</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://testing.smartstart.services.govt.nz/realme/acs/" index="0" isDefault="true" />
+	</md:SPSSODescriptor>
+	<md:Organization>
+		<md:OrganizationName xml:lang="en-us">
+		    Catalyst
+		</md:OrganizationName>
+		<md:OrganizationDisplayName xml:lang="en-us">
+		    Catalyst
+		</md:OrganizationDisplayName>
+		<md:OrganizationURL xml:lang="en-us">
+		    https://www.catalyst.net.nz
+		</md:OrganizationURL>
+	</md:Organization>
+	<md:ContactPerson contactType="technical">
+		<md:Company>Catalyst</md:Company>
+	</md:ContactPerson>
+</md:EntityDescriptor>

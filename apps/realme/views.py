@@ -5,13 +5,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django import http
 from django.conf import settings
+from django import http
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
+from onelogin.saml2.xml_utils import OneLogin_Saml2_XML
 from apps.base.decorators import render_to
 from .bundles import Bundle
 from utils import log_me
@@ -57,46 +57,88 @@ def login(request):
     return redirect(url)
 
 
-@render_to('sp/metadata.xml', content_type='text/plain')
+@render_to('realme/metadata.xml', content_type='text/plain')
 def metadata(request):
     return {
         'conf': Bundle()
     }
 
 
+def get_status(dom):
+    """
+    Gets Status from a Response, include RealMe inner subcode.
+
+    :param dom: The Response as XML
+    :type: Document
+
+    :returns: The Status, an array with code, subcode and a message.
+    :rtype: dict
+    """
+    status = {}
+
+    status_entry = OneLogin_Saml2_XML.query(dom, '/samlp:Response/samlp:Status')
+    if len(status_entry) != 1:
+        raise Exception('Missing valid Status on response')
+
+    code_entry = OneLogin_Saml2_XML.query(dom, '/samlp:Response/samlp:Status/samlp:StatusCode', status_entry[0])
+    if len(code_entry) != 1:
+        raise Exception('Missing valid Status Code on response')
+    code = code_entry[0].values()[0]
+    status['code'] = code
+
+    subcode_entry = OneLogin_Saml2_XML.query(dom, '/samlp:Response/samlp:Status/samlp:StatusCode/samlp:StatusCode', status_entry[0])
+    if len(subcode_entry) == 1:
+        status['subcode'] = subcode_entry[0].values()[0]
+
+    status['msg'] = ''
+    message_entry = OneLogin_Saml2_XML.query(dom, '/samlp:Response/samlp:Status/samlp:StatusMessage', status_entry[0])
+    if len(message_entry) == 1:
+        status['msg'] = message_entry[0].text
+
+    return status
+
+
 @csrf_exempt
-@render_to('sp/error.html')
+@render_to('realme/error.html')
 def assertion_consumer_service(request):
     if request.method != 'POST':
         return http.HttpResponseBadRequest()
+
+    response = http.HttpResponseRedirect('/')
 
     auth = init_saml2_auth(request)
     saml2_response = OneLogin_Saml2_Response(
         get_saml2_settings(),
         request.POST['SAMLResponse'],
     )
-    status = OneLogin_Saml2_Utils.get_status(saml2_response.document)
+    status = get_status(saml2_response.document)
     # status example: {code: FOO, msg: BAR}
     code = status.get('code')
     if code != OneLogin_Saml2_Constants.STATUS_SUCCESS:
         log.error('saml response status: {}'.format(status))
-        return status
+        subcode = status.get('subcode', '')
+        realme_inner_code = subcode.split(':')[-1]
+        assert realme_inner_code
+        response.set_cookie(
+            settings.EXCHANGE_COOKIE_NAME,
+            realme_inner_code,
+            secure=settings.SESSION_COOKIE_SECURE
+        )
+        return response
 
     auth.process_response()
-    error_reason = auth.get_last_error_reason()
-    if error_reason:
-        return {'code': 'ERROR', 'msg': error_reason}
-
-    if not auth.is_authenticated():
-        return {'code': 'NOTAUTHENTICATED', 'msg': 'NOT AUTHENTICATED'}
-
-    user = authenticate(saml2_auth=auth)
-    if user is not None:
-        if user.is_active:
+    if auth.is_authenticated():
+        user = authenticate(saml2_auth=auth)
+        if user and user.is_active:
             auth_login(request, user)
-            return redirect('/')
+            return response
 
-    return {'code': 'ERROR', 'msg': 'ACS Failed'}
+    response.set_cookie(
+        settings.EXCHANGE_COOKIE_NAME,
+        'RealMeError',
+        secure=settings.SESSION_COOKIE_SECURE
+    )
+    return response
 
 
 def extract_opaque_token(xml):
@@ -131,7 +173,7 @@ def escape_opaque_token(xml):
 
 
 @login_required
-@render_to('sp/error.html')
+@render_to('realme/error.html')
 def seamless(request, target_sp=''):
     bundle = Bundle()
     r = bundle.send_opaque_token_request(request.user, target_sp)
@@ -142,7 +184,7 @@ def seamless(request, target_sp=''):
     log_me(opaque_token_raw, name='opaque_token_raw.xml')
     opaque_token_escaped = escape_opaque_token(opaque_token_raw)
     log_me(opaque_token_escaped, name='opaque_token_escaped.xml')
-    response = render(request, 'sp/seamless.html', context={
+    response = render(request, 'realme/seamless.html', context={
         'relay_state': bundle.config.get('target_sps', {}).get(target_sp, {}).get('relay_state', ''),
         'opaque_token': opaque_token_escaped,
         'seamless_logon_service': bundle.config['seamless_logon_service'],

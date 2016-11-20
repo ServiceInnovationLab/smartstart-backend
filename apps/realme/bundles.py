@@ -138,7 +138,7 @@ class Bundle(object):
 
     @property
     def sp_acs_url(self):
-        return self.full_url(reverse('sp_acs'))
+        return self.full_url(reverse('realme:acs'))
 
     def get_settings(self):
         return {
@@ -187,7 +187,7 @@ class Bundle(object):
             }
         }
 
-    def render(self, template='sp/metadata.xml'):
+    def render(self, template='realme/metadata.xml'):
         return render_to_string(template, {'conf': self})
 
     @property
@@ -204,7 +204,7 @@ class Bundle(object):
         created = datetime.utcnow()  # must use utc time
         expires = created + timedelta(minutes=5)
         return render_to_string(
-            'sp/opaque_token_request_tmpl.xml',
+            'realme/opaque_token_request_tmpl.xml',
             context = {
                 'conf': self,
                 'created': dt_fmt(created),

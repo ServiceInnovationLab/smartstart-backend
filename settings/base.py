@@ -140,16 +140,16 @@ BUNDLES = {
     },
     'PRD': {
         'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
-        'sp_entity_id': 'https://bundle.services.govt.nz/sp/prd',  # TODO: to confirm
+        'sp_entity_id': 'https://smartstart.services.govt.nz/sp/SmartStart',
         'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
         'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
         'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'seamless_logon_service': 'TODO',
+        'seamless_logon_service': 'https://www.logon.realme.govt.nz/cls/seamlessEndpoint',
         'site_url': 'https://smartstart.services.govt.nz',
-        'saml_sp_cer': 'sa.saml.sig.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'sa.saml.sig.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'sa.mutual.sig.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'sa.mutual.sig.bundle.services.govt.nz.private.key',
+        'saml_sp_cer': 'prod.sa.saml.sig.smartstart.services.govt.nz.crt',
+        'saml_sp_key': 'prod.sa.saml.sig.smartstart.services.govt.nz.private.key',
+        'mutual_ssl_sp_cer': '',  # not ready yet
+        'mutual_ssl_sp_key': '',  # not ready yet
     },
 }
 

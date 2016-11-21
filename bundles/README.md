@@ -9,7 +9,7 @@ You can see gpg passphrase for all Bundles.
 
 # Create gpg file for MTS Bundle
 
-    tar -czf MTS.tgz
+    tar -czf MTS.tgz MTS
     gpg -c -o MTS.tgz.gpg MTS.tgz
     # input passphase for MTS
 

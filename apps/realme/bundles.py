@@ -81,10 +81,11 @@ class Bundle(object):
         )
 
         for field in fields:
-            assert self.file_path(field).isfile()
+            if self.config.get(field):
+                assert self.file_path(field).isfile()
 
         for prefix in ('saml_sp', 'mutual_ssl_sp'):
-            assert self.check_cer_and_key(prefix)
+            self.check_cer_and_key(prefix)
 
     def __str__(self):
         return self.name
@@ -96,13 +97,14 @@ class Bundle(object):
         from subprocess import check_output
         cer_field = '{}_cer'.format(prefix)
         key_field = '{}_key'.format(prefix)
-        cer_path = self.file_path(cer_field)
-        key_path = self.file_path(key_field)
-        cmd = 'openssl x509 -noout -modulus -in {}'.format(cer_path)
-        s1 = check_output(cmd.split())
-        cmd = 'openssl rsa -noout -modulus -in {}'.format(key_path)
-        s2 = check_output(cmd.split())
-        return s1 == s2
+        if self.config.get(cer_field) and self.config.get(key_field):
+            cer_path = self.file_path(cer_field)
+            key_path = self.file_path(key_field)
+            cmd = 'openssl x509 -noout -modulus -in {}'.format(cer_path)
+            s1 = check_output(cmd.split())
+            cmd = 'openssl rsa -noout -modulus -in {}'.format(key_path)
+            s2 = check_output(cmd.split())
+            assert s1 == s2
 
     def file_path(self, field):
         return self.path / self.config[field]

@@ -1,5 +1,5 @@
 Cython==0.24.1
-Django==1.10.3
+Django==1.10.2
 django-extensions==1.7.4
 django-annoying==0.10.3
 djangorestframework==3.4.7

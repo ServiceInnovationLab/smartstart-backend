@@ -14,3 +14,4 @@ tmp/
 /bundles/ITE-uat/
 /bundles/PRD/
 /bundles/*.tgz
+ignore_*

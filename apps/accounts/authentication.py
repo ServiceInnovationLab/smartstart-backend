@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth import logout
-from rest_framework import status, authentication, exceptions, permissions
+from rest_framework import status, authentication, exceptions
 
 
 class FixedSessionTimeout(exceptions.APIException):
@@ -15,12 +15,11 @@ class FixedSessionAuthentication(authentication.SessionAuthentication):
 
     def authenticate(self, request):
         user_auth = super().authenticate(request)
-        if request.method not in permissions.SAFE_METHODS:
-            if user_auth:
-                user = user_auth[0]
-                if user and user.is_authenticated():
-                    delta = timezone.now() - user.last_login
-                    if delta.total_seconds() > settings.SESSION_COOKIE_AGE_SAVE:
-                        logout(request._request)
-                        raise FixedSessionTimeout()
+        if user_auth:
+            user = user_auth[0]
+            if user and user.is_authenticated():
+                delta = timezone.now() - user.last_login
+                if delta.total_seconds() > settings.SESSION_COOKIE_AGE:
+                    logout(request._request)
+                    raise FixedSessionTimeout()
         return user_auth

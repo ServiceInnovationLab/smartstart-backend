@@ -168,7 +168,7 @@ STATIC_ROOT = BASE_DIR/'static'
 # settings may need to override in local.py
 # principle: use production as default if possible
 DEBUG = False
-SESSION_COOKIE_AGE_SAVE = 30 * 60  # 30 mins
+SESSION_COOKIE_AGE = 30 * 60  # 30 mins
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 

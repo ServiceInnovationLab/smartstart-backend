@@ -81,7 +81,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        'apps.accounts.authentication.FixedSessionAuthentication',
     ),
 }
 
@@ -167,6 +168,7 @@ STATIC_ROOT = BASE_DIR/'static'
 # settings may need to override in local.py
 # principle: use production as default if possible
 DEBUG = False
+SESSION_COOKIE_AGE_SAVE = 30 * 60  # 30 mins
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 

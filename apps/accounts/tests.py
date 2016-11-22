@@ -8,7 +8,7 @@ class SessionTestCase(BaseTestCase):
     def setUp(self):
         BaseTestCase.setUp(self)
 
-    @override_settings(SESSION_COOKIE_AGE_SAVE=1)
+    @override_settings(SESSION_COOKIE_AGE=1)
     def test_session_timeout(self):
         self.login('test')
         time.sleep(2)
@@ -18,7 +18,7 @@ class SessionTestCase(BaseTestCase):
 
         # should timeout for post
         obj = {'group': 'settings', 'key': 'key0', 'val': 'val0'}
-        json = self.post_json(self.api_preferences, obj, expected=401)
+        self.post_json(self.api_preferences, obj, expected=401)
 
 
 class PreferenceTestCase(BaseTestCase):

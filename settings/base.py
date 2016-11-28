@@ -177,7 +177,7 @@ SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
 
-LOG_FILE = '/var/log/boac.log'
+LOG_FILE = '/var/log/smartstart.log'
 
 ############# END OVERRIDE #############
 

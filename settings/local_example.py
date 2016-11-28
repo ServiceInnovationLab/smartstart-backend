@@ -7,7 +7,7 @@ CSRF_COOKIE_SECURE = False
 SITE_DOMAIN = '127.0.0.1:8000'
 SITE_URL = 'http://{}'.format(SITE_DOMAIN)
 BUNDLE_NAME = 'MTS'  # FAKE, MTS, ITE-uat, ITE-testing, PRD
-LOG_FILE = '/tmp/boac.log'
+LOG_FILE = '/tmp/smartstart.log'
 
 # example for prd
 BUNDLES_ROOT = '/srv/bundles'

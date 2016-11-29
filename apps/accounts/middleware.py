@@ -15,7 +15,12 @@ class UserCookieMiddleWare(object):
         if hasattr(request, 'user'):
             cookie_name = settings.EXCHANGE_COOKIE_NAME
             if request.user.is_authenticated() and request.COOKIES.get(cookie_name) != 'true':
-                response.set_cookie(cookie_name, 'true', secure=settings.SESSION_COOKIE_SECURE)
+                response.set_cookie(
+                    cookie_name,
+                    'true',
+                    max_age=settings.SESSION_COOKIE_AGE,
+                    secure=settings.SESSION_COOKIE_SECURE
+                )
             elif not request.user.is_authenticated() and request.COOKIES.get(cookie_name) == 'true':
                 # else if if no user and cookie remove user cookie, logout
                 response.delete_cookie(cookie_name)

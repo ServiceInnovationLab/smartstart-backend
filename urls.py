@@ -28,10 +28,11 @@ router.register(r'preferences', accounts_views.PreferenceViewSet)
 router.register(r'phase-metadata', timeline_views.PhaseMetadataViewSet)
 
 urlpatterns = [
-    url(r'', include('apps.accounts.urls')),
-    url(r'', include('apps.accounts.urls', namespace='rest_framework')),
+    url(r'^$', RedirectView.as_view(pattern_name='api-root')),
     url(r'^realme/', include('apps.realme.urls', namespace='realme')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
-    url(r'^$', RedirectView.as_view(pattern_name='api-root')),
+    url(r'', include('two_factor.urls', 'two_factor')),
+    url(r'', include('apps.accounts.urls')),
+    url(r'', include('apps.accounts.urls', namespace='rest_framework')),
 ]

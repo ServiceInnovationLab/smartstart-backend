@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+  <title>{% block title %}2FA{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'two_factor/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+</head>
+<body>
+
+  {% block content_wrapper %}
+    <div class="container">
+      <a href="{% url 'admin:index' %}">Back to Django Admin</a>
+      {% block content %}{% endblock %}
+    </div>
+  {% endblock %}
+
+  <script src="{% static 'two_factor/js/jquery.min.js' %}"></script>
+  <script src="{% static 'two_factor/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

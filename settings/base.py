@@ -45,6 +45,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+     'django_otp',
+     'django_otp.plugins.otp_totp',
+     # 'django_otp.plugins.otp_hotp',
+     'django_otp.plugins.otp_static',
+     # 'django_otp.plugins.otp_email',
+     'two_factor',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -54,10 +61,12 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.accounts.middleware.UserCookieMiddleWare',
+    'apps.accounts.middleware.Check2FAMiddleware',
 ]
 
 TEMPLATES = [
@@ -91,8 +100,10 @@ AUTHENTICATION_BACKENDS = (
     'apps.realme.backends.SamlBackend',
 )
 
-LOGIN_URL = '/login/'
+# used by Django Admin
+LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = '/'
 
 BUNDLES = {
     'MTS': {

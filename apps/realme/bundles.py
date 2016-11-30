@@ -69,7 +69,7 @@ class Bundle(object):
         self.path = self.bundles_root / self.name
         assert self.path.isdir(), self.path
 
-        self.site_url = site_url or settings.SITE_URL
+        self.site_url = site_url or self.config.get('site_url') or settings.SITE_URL
 
         fields = (
             'saml_idp_cer',

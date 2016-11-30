@@ -191,7 +191,6 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = ['.{}'.format(SITE_DOMAIN)]
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

@@ -16,7 +16,7 @@
         </md:KeyDescriptor>
         <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
         <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
-        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://127.0.0.1:8000/realme/acs/" index="0" isDefault="true" />
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://smartstart.services.govt.nz/realme/acs/" index="0" isDefault="true" />
     </md:SPSSODescriptor>
     <md:Organization>
         <md:OrganizationName xml:lang="en-us">

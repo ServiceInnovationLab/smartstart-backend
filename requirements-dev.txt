@@ -4,6 +4,7 @@ django-extensions
 django-annoying
 djangorestframework
 django-two-factor-auth
+psycopg2
 python-dateutil
 pytz
 python3-saml

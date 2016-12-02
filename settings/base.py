@@ -173,9 +173,12 @@ DATABASES = {
     }
 }
 
+
 BUNDLES_ROOT = BASE_DIR / 'bundles'
 STATIC_ROOT = BASE_DIR / 'static'
 LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
+FORCE_2FA = True
+
 
 ############# BEGIN OVERRIDE #############
 # settings may need to override in local.py

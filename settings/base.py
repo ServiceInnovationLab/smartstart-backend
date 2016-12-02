@@ -174,6 +174,7 @@ DATABASES = {
 
 BUNDLES_ROOT = BASE_DIR/'bundles'
 STATIC_ROOT = BASE_DIR/'static'
+FORCE_2FA = True
 
 ############# BEGIN OVERRIDE #############
 # settings may need to override in local.py

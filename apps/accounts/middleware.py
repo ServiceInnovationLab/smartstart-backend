@@ -35,7 +35,8 @@ class Check2FAMiddleware(MiddlewareMixin):
     Check 2FA status for Django Admin.
     """
     def process_request(self, request):
-        user = request.user
-        if user.id and user.is_staff and user.totpdevice_set.count() == 0:
-            if request.path.startswith('/admin'):
-                return redirect('two_factor:setup')
+        if settings.FORCE_2FA:
+            user = request.user
+            if user.id and user.is_staff and user.totpdevice_set.count() == 0:
+                if request.path.startswith('/admin'):
+                    return redirect('two_factor:setup')

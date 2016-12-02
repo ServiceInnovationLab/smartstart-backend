@@ -3,6 +3,7 @@ from path import path
 
 BASE_DIR = path(dirname(dirname(abspath(__file__))))
 PROJ_NAME = 'smartstart'
+LOG_FILE_NAME = '{}.log'.format(PROJ_NAME)
 
 USE_I18N = True
 
@@ -172,24 +173,23 @@ DATABASES = {
     }
 }
 
-BUNDLES_ROOT = BASE_DIR/'bundles'
-STATIC_ROOT = BASE_DIR/'static'
+
+BUNDLES_ROOT = BASE_DIR / 'bundles'
+STATIC_ROOT = BASE_DIR / 'static'
+LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
 FORCE_2FA = True
+
 
 ############# BEGIN OVERRIDE #############
 # settings may need to override in local.py
 # principle: use production as default if possible
 DEBUG = False
 SESSION_COOKIE_AGE = 30 * 60  # 30 mins
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
-
-LOG_FILE = '/var/log/smartstart.log'
 
 ############# END OVERRIDE #############
 
@@ -197,6 +197,8 @@ try:
     from .local import *  # noqa
 except ImportError:
     pass
+
+SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = SITE_URL.startswith('https')
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
@@ -220,7 +222,7 @@ LOGGING = {
         'file': {
             'level': 'WARN',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_FILE,
+            'filename': LOG_FILE_PATH,
             'formatter': 'simple',
             'maxBytes': 10 * 1024 * 1024,  # 10 mb
         },

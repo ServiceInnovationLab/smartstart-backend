@@ -106,6 +106,21 @@ LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_URL = '/'
 
+# email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+EMAIL_HOST = 'aws-email-host'
+EMAIL_HOST_USER = 'aws-email-user-key'
+EMAIL_HOST_PASSWORD = 'aws-email-user-password'
+
+DEFAULT_FROM_EMAIL = 'from-email'
+
+REPLY_TO_EMAIL = 'reply-to-email'
+RETURN_PATH_EMAIL = 'return-path-email'
+
+# realme bundles settings
 BUNDLES = {
     'MTS': {
         'idp_entity_id': 'https://mts.realme.govt.nz/saml2',

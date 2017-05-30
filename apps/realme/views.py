@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
 from django import http
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
@@ -57,6 +57,7 @@ def login(request):
     return redirect(url)
 
 
+@user_passes_test(lambda user: user.is_superuser)
 @render_to('realme/metadata.xml', content_type='text/plain')
 def metadata(request):
     return {

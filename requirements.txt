@@ -26,7 +26,7 @@ django-phonenumber-field==0.7.2
 idna==2.1
 ipython-genutils==0.1.0
 isodate==0.5.4
-lxml==3.6.4
+lxml==3.8.0
 pexpect==4.2.1
 phonenumbers==7.7.5
 pickleshare==0.7.4

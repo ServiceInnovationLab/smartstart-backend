@@ -1,7 +1,7 @@
 from os.path import dirname, abspath
-from path import path
+from path import Path
 
-BASE_DIR = path(dirname(dirname(abspath(__file__))))
+BASE_DIR = Path(dirname(dirname(abspath(__file__))))
 PROJ_NAME = 'smartstart'
 LOG_FILE_NAME = '{}.log'.format(PROJ_NAME)
 

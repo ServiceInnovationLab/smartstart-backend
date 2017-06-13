@@ -22,7 +22,7 @@ asn1crypto==0.22.0
 Babel==2.4.0
 certifi==2017.4.17
 cffi==1.10.0
-chardet==3.0.3
+chardet==3.0.4
 cryptography==1.9
 decorator==4.0.11
 django-formtools==2.0
@@ -34,7 +34,8 @@ isodate==0.5.4
 jedi==0.10.2
 lxml==3.8.0
 pexpect==4.2.1
-phonenumberslite==8.5.0
+phonenumbers==7.7.5
+phonenumberslite==8.5.1
 pickleshare==0.7.4
 pkgconfig==1.2.2
 prompt-toolkit==1.0.14
@@ -48,4 +49,5 @@ six==1.10.0
 traitlets==4.3.2
 urllib3==1.21.1
 wcwidth==0.1.7
+Werkzeug==0.12.2
 xmlsec==1.0.9

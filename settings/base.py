@@ -247,7 +247,7 @@ LOGGING = {
             'level': 'WARN',
         },
         'apps': {
-            'level': 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'handlers': ['console', 'file'],
         },
     },

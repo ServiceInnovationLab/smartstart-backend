@@ -18,9 +18,12 @@ from django.conf.urls import url, include
 from django.views.generic import RedirectView
 
 from rest_framework import routers
+from apps.base import views as base_views
 from apps.accounts import views as accounts_views
 from apps.timeline import views as timeline_views
 
+admin.site.site_title = 'SmartStart'
+admin.site.site_header = 'SmartStart'
 
 router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
@@ -29,6 +32,7 @@ router.register(r'phase-metadata', timeline_views.PhaseMetadataViewSet)
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(pattern_name='api-root')),
+    url(r'^make_live/(?P<site_hash>[a-z0-9]+)/$', base_views.make_live_view, name='make_live_view'),
     url(r'^realme/', include('apps.realme.urls', namespace='realme')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),

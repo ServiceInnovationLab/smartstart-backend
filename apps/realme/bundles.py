@@ -6,7 +6,7 @@ import uuid
 import xmlsec
 import requests
 from lxml import etree
-from path import path
+from path import Path
 from datetime import datetime, timedelta
 from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -64,7 +64,7 @@ class Bundle(object):
         assert self.name in settings.BUNDLES, 'invalid bundle name: {}'.format(self.name)
         self.config = settings.BUNDLES[self.name]
 
-        self.bundles_root = path(bundles_root or settings.BUNDLES_ROOT)
+        self.bundles_root = Path(bundles_root or settings.BUNDLES_ROOT)
         assert self.bundles_root.isdir(), self.bundles_root
         self.path = self.bundles_root / self.name
         assert self.path.isdir(), self.path

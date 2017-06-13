@@ -14,11 +14,11 @@ class SessionTestCase(BaseTestCase):
         time.sleep(2)
 
         # should not timeout for get
-        self.get_json(self.api_me, expected=200)
+        self.get_json(self.api_me, expected=403)
 
         # should timeout for post
         obj = {'group': 'settings', 'key': 'key0', 'val': 'val0'}
-        self.post_json(self.api_preferences, obj, expected=401)
+        self.post_json(self.api_preferences, obj, expected=403)
 
 
 class PreferenceTestCase(BaseTestCase):

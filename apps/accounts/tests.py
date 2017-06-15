@@ -1,4 +1,5 @@
 import time
+from datetime import date
 from django.test import override_settings
 from apps.base.tests import BaseTestCase
 from apps.accounts.models import Preference
@@ -13,7 +14,6 @@ class SessionTestCase(BaseTestCase):
         self.login('test')
         time.sleep(2)
 
-        # should not timeout for get
         self.get_json(self.api_me, expected=403)
 
         # should timeout for post
@@ -67,3 +67,12 @@ class PreferenceTestCase(BaseTestCase):
         self.login('test')
         obj = {'group': 'settings', 'key': 'key0', 'val': ''}
         self.post_json(self.api_preferences, obj, expected=201)
+
+    def test_due_date(self):
+        """
+        Set due date via preference API, and retrieve it.
+        """
+        self.login('test')
+        obj = {'group': 'settings', 'key': 'dd', 'val': '2016-10-28'}
+        self.post_json(self.api_preferences, obj, expected=201)
+        self.assertEqual(self.test.profile.get_due_date(), date(2016, 10, 28))

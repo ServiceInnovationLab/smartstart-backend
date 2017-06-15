@@ -1,5 +1,5 @@
 import json
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 
 class BaseTestCase(TestCase):
@@ -31,3 +31,16 @@ class BaseTestCase(TestCase):
         self.assertEqual(r.status_code, expected)
         return json.loads(r.content.decode('utf-8'))
 
+
+class GenericTestCase(BaseTestCase):
+
+    def test_make_live_invalid(self):
+        url = '/make_live/INVALID_SITE_HASH'
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 404)
+
+    @override_settings(SITE_HASH='1234')
+    def test_make_live(self):
+        url = '/make_live/1234/'
+        r = self.client.get(url.format('invalid-site-hash'))
+        self.assertEqual(r.status_code, 200)

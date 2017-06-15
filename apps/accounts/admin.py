@@ -20,3 +20,9 @@ class PreferenceInline(admin.TabularInline):
 class UserAdminPlus(UserAdmin):
     inlines = [ProfileInline, PreferenceInline]
 
+    actions = ['generate_notifications']
+
+    def generate_notifications(self, request, queryset):
+        for user in queryset:
+            user.profile.generate_notifications()
+

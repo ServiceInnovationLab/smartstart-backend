@@ -58,6 +58,10 @@ class Profile(TimeStampedModel):
         else:
             return None
 
+    def get_pregnancy_helper(self, due_date=None):
+        due_date = due_date or self.get_due_date()
+        return PregnancyHelper(due_date) if due_date else None
+
     def generate_notifications(self, weeks_before=1, ref_date=None):
         """
         Generate notificaiton for user.
@@ -75,9 +79,9 @@ class Profile(TimeStampedModel):
             log.info('skip generate_notifications for user {} since no due_date'.format(self.user))
             return
 
-        helper = PregnancyHelper(due_date)
+        helper = get_pregnancy_helper(due_date=due_date)
         phase = helper.get_due_phase(
-            ref_date=ref_date or date.today(),
+            ref_date=ref_date,
             weeks_before=weeks_before,
         )
         if not phase:

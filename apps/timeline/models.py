@@ -13,38 +13,42 @@ PREGNANCY_TOTAL_WEEKS = 40
 
 class PregnancyHelper:
 
-    def __init__(self, due_date):
-        self.due_date = due_date
+    def set_due_date(self, due_date):
+        if due_date:
+            self.due_date = due_date
+            self.pregnancy_date = due_date - timedelta(weeks=PREGNANCY_TOTAL_WEEKS)
+
+    def __init__(self, due_date=None):
+        self.set_due_date(due_date)
 
     def get_weekno(self, ref_date=None):
         """Get weekno at ref_date or today as integer"""
         today = ref_date or date.today()
-        return int((today - self.due_date).days/7 + PREGNANCY_TOTAL_WEEKS)
+        return int((today - self.pregnancy_date).days/7)
 
     def get_week_start_date(self, weekno):
-        return self.due_date + timedelta(weeks=weekno-PREGNANCY_TOTAL_WEEKS)
+        return self.pregnancy_date + timedelta(weeks=weekno)
 
     def get_week_finish_date(self, weekno):
         """week finish date is last day of that week"""
         return self.get_week_start_date(weekno) + timedelta(days=6)
 
-    def get_pregnany_start_date(self):
-        return self.get_week_start_date(0)
-
     def get_due_phase(self, ref_date=None, weeks_before=1):
-        """Find phase which will be due in next week."""
-        weekno = self.get_weekno(ref_date=ref_date)
-        # we send notifications 1 week before
-        weekno_next_week = weekno + weeks_before
-        return PhaseMetadata.objects.get_phase_by_weekno(weekno_next_week)
+        """
+        Which phase should we send email at ref_date.
+
+        Email should be sent 1 week before phase.
+        """
+        today = ref_date or date.today()
+        target_date = today + timedelta(weeks=weeks_before)
+        weekno = self.get_weekno(ref_date=target_date)
+        return PhaseMetadata.objects.get_phase_by_weekno(weekno)
 
     def get_phase_date(self, phase):
         """For current due date, get the date for phase"""
-        start = self.get_week_start_date(phase.weeks_start)
         return {
-            'start': start,
-            'finish': self.get_week_start_date(phase.weeks_finish),
-            'notify': start - timedelta(weeks=1)
+            'start': self.get_week_start_date(phase.weeks_start),
+            'finish': self.get_week_finish_date(phase.weeks_finish),
         }
 
     def get_phase_date_for_all(self):
@@ -116,8 +120,20 @@ class Notification(TimeStampedModel):
     class Meta:
         unique_together = ['user', 'phase', 'due_date']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = PregnancyHelper(self.due_date)
+
     def __str__(self):
         return '{} -> {}'.format(self.phase, self.email)
+
+    @property
+    def pregnancy_date(self):
+        return self.helper.pregnancy_date
+
+    @property
+    def weekno(self):
+        return self.helper.get_weekno(ref_date=self.created_at.date())
 
     def render_email_template(self):
         return render_to_string(

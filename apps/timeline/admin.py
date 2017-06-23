@@ -21,7 +21,7 @@ class PhaseMetadataAdmin(admin.ModelAdmin):
 
 @admin.register(m.Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ['phase', 'email', 'due_date', 'created_at', 'status']
+    list_display = ['phase', 'email', 'pregnancy_date', 'due_date', 'weekno', 'created_at', 'status']
     list_filter = ['phase', 'status']
     raw_id_fields = ['user']
     date_hierarchy = 'created_at'

@@ -18,7 +18,7 @@ class Command(BaseCommand):
             ref_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         else:
             ref_date = date.today()
-        # users who have due date and email
+        # users who have email and due date
         user_ids = Preference.objects.filter(
             key='dd',
             user__email__isnull=False,
@@ -28,6 +28,7 @@ class Command(BaseCommand):
             'user_id',
             flat=True
         )
+        # users who are subscribed
         profiles = Profile.objects.filter(
             subscribed=True,
             user__id__in=user_ids,

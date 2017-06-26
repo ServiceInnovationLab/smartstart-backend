@@ -1,8 +1,11 @@
 from datetime import datetime, date
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
+from apps.base.utils import get_full_url
 from apps.timeline.models import PhaseMetadata, PregnancyHelper
 
 import logging
@@ -109,3 +112,14 @@ class Profile(TimeStampedModel):
         for pref in Preference.objects.filter(user=self.user):
             preferences[pref.group][pref.key] = pref.val
         return preferences
+
+    @property
+    def unsubscribe_url(self):
+        full_token = TimestampSigner().sign(self.user_id)
+        user_id, token = full_token.split(":", 1)
+        url = reverse(
+            'accounts:unsubscribe',
+            kwargs={'user_id': user_id, 'token': token}
+        )
+        # must return full url since it's in email.
+        return get_full_url(url)

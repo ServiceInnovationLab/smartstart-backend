@@ -5,9 +5,12 @@ from . import models as m
 
 admin.site.unregister(User)
 
-class ProfileInline(admin.TabularInline):
+class ProfileInline(admin.StackedInline):
     model = m.Profile
-    fields = ['logon_attributes_token',]
+    fields = [
+        'subscribed',
+        'logon_attributes_token',
+    ]
 
 
 class PreferenceInline(admin.TabularInline):

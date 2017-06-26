@@ -69,14 +69,11 @@ class Profile(TimeStampedModel):
         This method will be trigged by a daily cron job.
         """
         if not self.subscribed:
-            log.info('skip generate_notifications for user {} since not subscribed'.format(self.user))
             return
         if not self.user.email:
-            log.info('skip generate_notifications for user {} since no email'.format(self.user))
             return
         due_date = self.get_due_date()
         if not due_date:
-            log.info('skip generate_notifications for user {} since no due_date'.format(self.user))
             return
 
         helper = get_pregnancy_helper(due_date=due_date)
@@ -85,20 +82,16 @@ class Profile(TimeStampedModel):
             weeks_before=weeks_before,
         )
         if not phase:
-            log.info('skip generate_notifications for user {} since no phase matched'.format(self.user))
             return
 
         # notifications generated for this phase but other due date should be deleted
-        rows, _ = self.user.notification_set.filter(
+        self.user.notification_set.filter(
             phase=phase
         ).exclude(
             due_date=due_date
         ).delete()
-        if rows:
-            log.info('delete {} previous notifications for user {} and phase {} since due date changed'.format(rows, self.user, phase))
 
         if not phase.subject:
-            log.info('skip generate_notifications for user {} since phase {} has no subject'.format(self.user, phase))
             return
 
         notification, created = self.user.notification_set.get_or_create(
@@ -108,9 +101,6 @@ class Profile(TimeStampedModel):
                 'email': self.user.email,
             }
         )
-        if created:
-            log.info('notification generated for user {}: {}'.format(self.user, notification))
-
         return notification
 
     def dump_preferences(self):

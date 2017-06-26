@@ -147,16 +147,13 @@ class Notification(TimeStampedModel):
 
     def send(self):
         if self.status != MailStatus.todo.name:
-            log.info('Try to send mail with status {}, skipped'.format(self.status))
             return
         if not self.user.email:
-            log.info('Try to send mail to user {} with no email, skipped'.format(self.user.id))
             self.status = MailStatus.noemail.name
             self.save()
             return
         profile = self.user.profile
         if not profile.subscribed:
-            log.info('Try to send mail to unsubscribed user {}, skipped'.format(self.user))
             self.status = MailStatus.unsubscribed.name
             self.save()
             return
@@ -171,8 +168,6 @@ class Notification(TimeStampedModel):
             # set it to devlivered directly
             self.status = MailStatus.delivered.name
             self.save()
-            log.debug('Send notification {} for phase "{}" and user email "{}"'.format(
-                self.id, self.phase, self.user.email))
         except Exception as e:
             log.error('Sending notification {} failed: {}'.format(self.id, e))
             self.status = MailStatus.failed.name

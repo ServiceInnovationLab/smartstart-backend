@@ -76,7 +76,7 @@ class Profile(TimeStampedModel):
         if not due_date:
             return
 
-        helper = get_pregnancy_helper(due_date=due_date)
+        helper = self.get_pregnancy_helper(due_date=due_date)
         phase = helper.get_due_phase(
             ref_date=ref_date,
             weeks_before=weeks_before,

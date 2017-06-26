@@ -1,6 +1,9 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import login as auth_login
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
 from apps.realme.views import login as realme_login
@@ -8,6 +11,7 @@ from . import models as m
 
 import logging
 log = logging.getLogger(__name__)
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -113,3 +117,41 @@ def login_router(request):
         return realme_login(request)
     else:
         return auth_login(request)
+
+
+def unsubscribe(request, user_id, token):
+
+    # it can be different from current user
+    target_user = get_object_or_404(
+        User,
+        id=user_id,
+        is_active=True
+    )
+    message = ''
+    try:
+        key = '{}:{}'.format(user_id, token)
+        # Valid for 7 days, move to settings when necessary.
+        TimestampSigner().unsign(key, max_age=60 * 60 * 24 * 7)
+    except SignatureExpired:
+        # note: this must be before BadSignature
+        # otherwise the code will always catch BadSignature exception.
+        # since SignatureExpired is subclass of BadSignature
+        message = 'Unsubscribe token expired'
+    except BadSignature:
+        message = 'Invalid unsubscribe token'
+    except Exception as e:
+        message = 'Unknown unsubscribe error'
+
+    if message:
+        return render(
+            request,
+            'accounts/message.html',
+            context={'message': message}
+        )
+    else:
+        m.Profile.objects.filter(user_id=user_id).update(subscribed=False)
+        return render(
+            request,
+            'accounts/unsubscribed.html',
+            context={'user': target_user}
+        )

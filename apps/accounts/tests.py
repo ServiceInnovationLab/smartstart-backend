@@ -76,3 +76,11 @@ class PreferenceTestCase(BaseTestCase):
         obj = {'group': 'settings', 'key': 'dd', 'val': '2016-10-28'}
         self.post_json(self.api_preferences, obj, expected=201)
         self.assertEqual(self.test.profile.get_due_date(), date(2016, 10, 28))
+
+    def test_unsubscribe(self):
+        profile = self.test.profile
+        profile.subscribed = True
+        profile.save()
+        self.client.get(profile.unsubscribe_url)
+        profile.refresh_from_db()
+        self.assertFalse(profile.subscribed)

@@ -5,6 +5,12 @@ BASE_DIR = Path(dirname(dirname(abspath(__file__))))
 PROJ_NAME = 'smartstart'
 LOG_FILE_NAME = '{}.log'.format(PROJ_NAME)
 
+ADMINS = [
+    ('lef-system', 'lef-system@catalyst.net.nz'),
+]
+
+MANAGERS = ADMINS
+
 USE_I18N = True
 
 USE_L10N = True

@@ -126,67 +126,6 @@ DEFAULT_FROM_EMAIL = 'from-email'
 REPLY_TO_EMAIL = 'reply-to-email'
 RETURN_PATH_EMAIL = 'return-path-email'
 
-# realme bundles settings
-BUNDLES = {
-    'MTS': {
-        'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
-        'sp_entity_id': 'https://bundle.services.govt.nz/sp/mts',
-        'saml_idp_cer': 'mts_login_saml_idp.cer',
-        'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
-        'single_sign_on_service': 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
-        'seamless_logon_service': 'NA',
-        'saml_sp_cer': 'mts_saml_sp.cer',
-        'saml_sp_key': 'mts_saml_sp.key',
-        'mutual_ssl_sp_cer': 'mts_mutual_ssl_sp.cer',
-        'mutual_ssl_sp_key': 'mts_mutual_ssl_sp.key',
-    },
-    'ITE-uat': {
-        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'sp_entity_id': 'https://bundle.services.govt.nz/sp/uat',
-        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
-        'site_url': 'https://uat.smartstart.services.govt.nz',
-        'saml_sp_cer': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.private.key',
-    },
-    'ITE-testing': {
-        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
-        'sp_entity_id': 'https://bundle.services.govt.nz/sp/testing',
-        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
-        'site_url': 'https://testing.smartstart.services.govt.nz',
-        'saml_sp_cer': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.crt',
-        'saml_sp_key': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.crt',
-        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.private.key',
-        'target_sps': {
-            'test': {
-                'entity_id': 'https://testagency.dia.govt.nz/igovtTargetAgency2/EntityID3',
-                'relay_state': 'idpMetaAliasxITE-IDP1/spMetaAliasxITE-SP3/cotxITE',
-            }
-        }
-    },
-    'PRD': {
-        'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
-        'sp_entity_id': 'https://smartstart.services.govt.nz/sp/SmartStart',
-        'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
-        'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
-        'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
-        'seamless_logon_service': 'https://www.logon.realme.govt.nz/cls/seamlessEndpoint',
-        'site_url': 'https://smartstart.services.govt.nz',
-        'saml_sp_cer': 'prod.sa.saml.sig.smartstart.services.govt.nz.crt',
-        'saml_sp_key': 'prod.sa.saml.sig.smartstart.services.govt.nz.private.key',
-        'mutual_ssl_sp_cer': '',  # not ready yet
-        'mutual_ssl_sp_key': '',  # not ready yet
-    },
-}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -199,6 +138,8 @@ BUNDLES_ROOT = BASE_DIR / 'bundles'
 STATIC_ROOT = BASE_DIR / 'static'
 LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
 FORCE_2FA = True
+# cookie to exchange info between backend and frontend
+EXCHANGE_COOKIE_NAME = 'is_authenticated'
 
 
 ############# BEGIN OVERRIDE #############
@@ -259,5 +200,63 @@ LOGGING = {
     },
 }
 
-# cookie to exchange info between backend and frontend
-EXCHANGE_COOKIE_NAME = 'is_authenticated'
+# realme bundles settings, must be after local since we need SITE_URL here
+BUNDLES = {
+    'MTS': {
+        'idp_entity_id': 'https://mts.realme.govt.nz/saml2',
+        'sp_entity_id': '{}/sp/mts'.format(SITE_URL.strip('/')),
+        'saml_idp_cer': 'mts_login_saml_idp.cer',
+        'mutual_ssl_idp_cer': 'mts_mutual_ssl_idp.cer',
+        'single_sign_on_service': 'https://mts.realme.govt.nz/logon-mts/mtsEntryPoint',
+        'seamless_logon_service': 'NA',
+        'saml_sp_cer': 'mts_saml_sp.cer',
+        'saml_sp_key': 'mts_saml_sp.key',
+        'mutual_ssl_sp_cer': 'mts_mutual_ssl_sp.cer',
+        'mutual_ssl_sp_key': 'mts_mutual_ssl_sp.key',
+    },
+    'ITE-uat': {
+        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/uat',
+        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
+        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
+        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+        'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
+        'site_url': 'https://uat.smartstart.services.govt.nz',
+        'saml_sp_cer': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.crt',
+        'saml_sp_key': 'ite.sa.saml.sig.uat.bundle.services.govt.nz.private.key',
+        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.crt',
+        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.uat.bundle.services.govt.nz.private.key',
+    },
+    'ITE-testing': {
+        'idp_entity_id': 'https://www.ite.logon.realme.govt.nz/saml2',
+        'sp_entity_id': 'https://bundle.services.govt.nz/sp/testing',
+        'saml_idp_cer': 'ite.signing.logon.realme.govt.nz.cer',
+        'mutual_ssl_idp_cer': 'ws.ite.realme.govt.nz.cer',
+        'single_sign_on_service': 'https://www.ite.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+        'seamless_logon_service': 'https://www.ite.logon.realme.govt.nz/cls/seamlessEndpoint',
+        'site_url': 'https://testing.smartstart.services.govt.nz',
+        'saml_sp_cer': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.crt',
+        'saml_sp_key': 'ite.sa.saml.sig.testing.bundle.services.govt.nz.private.key',
+        'mutual_ssl_sp_cer': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.crt',
+        'mutual_ssl_sp_key': 'ite.sa.mutual.sig.testing.bundle.services.govt.nz.private.key',
+        'target_sps': {
+            'test': {
+                'entity_id': 'https://testagency.dia.govt.nz/igovtTargetAgency2/EntityID3',
+                'relay_state': 'idpMetaAliasxITE-IDP1/spMetaAliasxITE-SP3/cotxITE',
+            }
+        }
+    },
+    'PRD': {
+        'idp_entity_id': 'https://www.logon.realme.govt.nz/saml2',
+        'sp_entity_id': 'https://smartstart.services.govt.nz/sp/SmartStart',
+        'saml_idp_cer': 'signing.logon.realme.govt.nz.cer',
+        'mutual_ssl_idp_cer': 'ws.realme.govt.nz.cer',
+        'single_sign_on_service': 'https://www.logon.realme.govt.nz/sso/logon/metaAlias/logon/logonidp',
+        'seamless_logon_service': 'https://www.logon.realme.govt.nz/cls/seamlessEndpoint',
+        'site_url': 'https://smartstart.services.govt.nz',
+        'saml_sp_cer': 'prod.sa.saml.sig.smartstart.services.govt.nz.crt',
+        'saml_sp_key': 'prod.sa.saml.sig.smartstart.services.govt.nz.private.key',
+        'mutual_ssl_sp_cer': '',  # not ready yet
+        'mutual_ssl_sp_key': '',  # not ready yet
+    },
+}

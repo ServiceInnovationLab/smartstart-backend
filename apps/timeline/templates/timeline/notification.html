@@ -1,8 +1,16 @@
-{{obj.phase.subject}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
 
-----------------------------------------
+<h2>{{obj.phase.subject}}</h2>
 
-{{obj.phase.content}}
+<p>{{obj.phase.markdown_content}}</p>
 
+<a href="{{obj.user.profile.unsubscribe_url}}">Unsubscribe</a>
 
-{{obj.user.profile.unsubscribe_url}}
+</body>
+</html>

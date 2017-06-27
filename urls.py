@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
     url(r'^accounts/', include('apps.accounts.urls', namespace='accounts')),
+    url(r'^timeline/', include('apps.timeline.urls', namespace='timeline')),
     url(r'', include('two_factor.urls', namespace='two_factor')),
     url(r'', include('apps.accounts.urls', namespace='rest_framework')),
 ]

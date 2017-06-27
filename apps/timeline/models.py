@@ -1,8 +1,12 @@
 from datetime import date, timedelta
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+
+from mistune import markdown
 from apps.base.models import TimeStampedModel, Choice
 from apps.base.mail import ses_send_mail
 import logging
@@ -94,6 +98,10 @@ class PhaseMetadata(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def markdown_content(self):
+        return mark_safe(markdown(self.content))
 
 
 class MailStatus(Choice):

@@ -1,8 +1,9 @@
 import time
 from datetime import date
+from django.core import mail
 from django.test import override_settings
 from apps.base.tests import BaseTestCase
-from apps.accounts.models import Preference
+from apps.accounts.models import Preference, EmailAddress
 
 
 class SessionTestCase(BaseTestCase):
@@ -84,3 +85,49 @@ class PreferenceTestCase(BaseTestCase):
         self.client.get(profile.unsubscribe_url)
         profile.refresh_from_db()
         self.assertFalse(profile.subscribed)
+
+
+class AccountTestCase(BaseTestCase):
+
+    def setUp(self):
+        BaseTestCase.setUp(self)
+
+    def test_email_confirm(self):
+        # a user has no email and not subscribed
+        user = self.test
+        user.email = ''
+        user.save()
+        profile = user.profile
+        profile.subscribed = False
+        profile.save()
+
+        # change mail via API
+        self.login('test')
+        data = {'email': 'lef-dev+test@catalyst.net.nz'}
+        self.post_json(self.api_emailaddresses, data, expected=201)
+
+        # should create pending EmailAddress recored for user
+        obj = EmailAddress.objects.first()
+        self.assertEqual(obj.user, user)
+        self.assertEqual(obj.email, data['email'])
+
+        # should trigger a email contains confirm url
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(obj.confirm_url, mail.outbox[0].body)
+
+        # click url
+        self.client.get(obj.confirm_url)
+        user.refresh_from_db()
+        profile.refresh_from_db()
+        self.assertEqual(user.email, data['email'])
+        self.assertTrue(profile.subscribed)
+        self.assertEqual(EmailAddress.objects.count(), 0)
+
+        # now change again
+        data = {'email': 'lef-dev+test2@catalyst.net.nz'}
+        self.post_json(self.api_emailaddresses, data, expected=201)
+
+        obj = EmailAddress.objects.first()
+        self.client.get(obj.confirm_url)
+        user.refresh_from_db()
+        self.assertEqual(user.email, data['email'])

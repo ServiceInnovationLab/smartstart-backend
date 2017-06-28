@@ -1,5 +1,6 @@
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.conf import settings
+from django.template.loader import render_to_string
 
 
 def send_mail(subject, text_message, from_email, recipient_list,
@@ -52,3 +53,18 @@ def ses_send_mail(subject, text_message, recipient_list, html_message=None):
         reply_to=[reply_to_email],
         headers={'From': from_email}
     )
+
+
+def ses_send_templated_mail(template, recipient_list, context={}):
+    """
+    Render email template and send with ses.
+
+    In the email template, subject and message are separated like this:
+
+        This is email subject
+        --END SUBJECT--
+        This is your email body
+
+    """
+    subject, message = render_to_string(template, context).split('--END SUBJECT--')
+    return ses_send_mail(subject.strip(), message, recipient_list)

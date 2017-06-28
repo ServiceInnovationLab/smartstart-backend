@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, date
 from django.db import models
 from django.urls import reverse
@@ -6,6 +7,7 @@ from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
 from apps.base.utils import get_full_url
+from apps.base.mail import ses_send_templated_mail
 from apps.timeline.models import PhaseMetadata, PregnancyHelper
 
 import logging
@@ -123,3 +125,54 @@ class Profile(TimeStampedModel):
         )
         # must return full url since it's in email.
         return get_full_url(url)
+
+
+class EmailAddress(models.Model):
+    """
+    Handles a change to the email address of a user account.
+    This involves a confirmation email, sent to the new address with a token
+    and confirmation URL.
+    """
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False)
+    user = models.ForeignKey(User)
+    email = models.CharField(max_length=140)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Email addresses'
+
+    def __str__(self):
+        return '{}: {}'.format(self.user, self.email)
+
+    @property
+    def confirm_url(self):
+        url = reverse(
+            'accounts:confirm',
+            kwargs={'uuid': self.id}
+        )
+        # must return full url since it's in email.
+        return get_full_url(url)
+
+    def send_confirm_email(self):
+        return ses_send_templated_mail(
+            'emails/email_confirm.txt',
+            [self.email],
+            context={'confirm_url': self.confirm_url}
+        )
+
+    def confirm(self):
+        user = self.user
+        if self.email and user.email != self.email:
+            user.email = self.email
+            user.save(update_fields=['email'])
+            # while confirm new email, subscribe
+            profile = user.profile
+            profile.subscribed = True
+            profile.save(update_fields=['subscribed'])
+        # delete all of them
+        user.emailaddress_set.all().delete()

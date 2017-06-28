@@ -1,0 +1,16 @@
+SmartStart email address confirmation
+--END SUBJECT--
+Kia ora!
+
+Thanks for signing up to receive reminders from SmartSmart – we’re happy to be helping you throughout your pregnancy, and once your baby has arrived. 
+
+Click the link to confirm your email address:
+
+{{confirm_url}}
+
+Now you’re confirmed, we’ll keep you up to date with information sent directly to your inbox. 
+
+If you have any questions or feedback just hit reply.
+
+Kind regards,
+The SmartStart team

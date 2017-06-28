@@ -16,6 +16,7 @@ class BaseTestCase(TestCase):
         self.api_users = '/api/users/'
         self.api_me = '/api/users/me/'
         self.api_phasemetadata = '/api/phase-metadata/'
+        self.api_emailaddresses = '/api/emailaddresses/'
 
     def login(self, username):
         credentials = {'username': username, 'password': 'admin' if username == 'admin' else 'test'}

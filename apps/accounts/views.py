@@ -110,6 +110,29 @@ class PreferenceViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+class EmailAddressSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = m.EmailAddress
+        fields = ('url', 'email', 'created_at')
+
+
+class EmailAddressViewSet(viewsets.ModelViewSet):
+    """
+    Return a list of pending email address for current user.
+    """
+    queryset = m.EmailAddress.objects.none()
+    serializer_class = EmailAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return m.EmailAddress.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        obj = serializer.save(user=self.request.user)
+        # TODO: celery task?
+        obj.send_confirm_email()
+
+
 def login_router(request):
     BUNDLE_NAME = getattr(settings, 'BUNDLE_NAME', 'FAKE')
     log.info('current BUNDLE_NAME: {}'.format(BUNDLE_NAME))
@@ -146,7 +169,10 @@ def unsubscribe(request, user_id, token):
         return render(
             request,
             'accounts/message.html',
-            context={'message': message}
+            context={
+                'title': 'Unsubscribe failed.',
+                'lines': [message],
+            }
         )
     else:
         m.Profile.objects.filter(user_id=user_id).update(subscribed=False)
@@ -155,3 +181,20 @@ def unsubscribe(request, user_id, token):
             'accounts/unsubscribed.html',
             context={'user': target_user}
         )
+
+
+def confirm(request, uuid):
+    obj = get_object_or_404(m.EmailAddress, pk=uuid)
+    obj.confirm()
+    lines = [
+        '{} has been signed-up to SmartStart To Do list reminders.'.format(obj.email),
+        'You can unsubscribe at any time from your SmartStart profile or the reminder emails.',
+    ]
+    return render(
+        request,
+        'accounts/message.html',
+        context={
+            'title': 'Sign-up confirmed.',
+            'lines': lines,
+        }
+    )

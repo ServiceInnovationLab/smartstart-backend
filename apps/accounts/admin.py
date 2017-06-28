@@ -19,10 +19,16 @@ class PreferenceInline(admin.TabularInline):
     extra = 1
 
 
+class EmailAddressInline(admin.TabularInline):
+    model = m.EmailAddress
+    fields = ['email']
+    extra = 1
+
+
 @admin.register(User)
 class UserAdminPlus(UserAdmin):
     list_display = ['username', 'date_joined', 'email', 'subscribed', 'due_date']
-    inlines = [ProfileInline, PreferenceInline]
+    inlines = [ProfileInline, PreferenceInline, EmailAddressInline]
     date_hierarchy = 'date_joined'
 
     actions = ['generate_notifications']
@@ -43,3 +49,9 @@ class UserAdminPlus(UserAdmin):
 
     def subscribed(self, user):
         return user.profile.subscribed
+
+
+@admin.register(m.EmailAddress)
+class EmailAddressAdmin(admin.ModelAdmin):
+    list_display = ['user', 'email', 'created_at']
+    raw_id_fields = ['user']

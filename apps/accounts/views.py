@@ -42,7 +42,29 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         user_serializer = self.serializer_class(user, context={'request': request})
         user_data = user_serializer.data
         user_data['preferences'] = profile.dump_preferences()
+        user_data['profile'] = ProfileSerializer(user.profile, context={'request': request}).data
         return response.Response(user_data)
+
+
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = m.Profile
+        fields = ('url', 'subscribed')
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    """
+    Return a list of profiles.
+    """
+    queryset = m.Profile.objects.none()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return m.Profile.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class PreferenceSerializer(serializers.HyperlinkedModelSerializer):

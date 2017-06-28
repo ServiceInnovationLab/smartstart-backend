@@ -30,14 +30,6 @@ class Preference(models.Model):
 class Profile(TimeStampedModel):
     user = AutoOneToOneField(User)
     dob = models.DateField(verbose_name="Date of Birth", blank=True, null=True)
-    GENDER_MALE = 'M'
-    GENDER_FEMALE = 'F'
-    GENDER_CHOICES = (
-        (None, 'Unknown'),
-        (GENDER_MALE, 'Male'),
-        (GENDER_FEMALE, 'Female'),
-    )
-    gender = models.CharField(max_length=10, blank=True, choices=GENDER_CHOICES)
     subscribed = models.BooleanField(default=True)
     logon_attributes_token = models.TextField(blank=True)
 

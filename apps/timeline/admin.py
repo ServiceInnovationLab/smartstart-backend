@@ -5,7 +5,6 @@ from . import models as m
 @admin.register(m.PhaseMetadata)
 class PhaseMetadataAdmin(admin.ModelAdmin):
     list_display = ['name', 'subject', 'content']
-    exclude = ('modified_by',)
     actions = None
 
     def has_add_permission(self, request, obj=None):
@@ -13,10 +12,6 @@ class PhaseMetadataAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser
-
-    def save_model(self, request, obj, form, change):
-        obj.modified_by = request.user
-        obj.save()
 
 
 @admin.register(m.Notification)

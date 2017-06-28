@@ -5,7 +5,6 @@
     "fields": {
         "created_at": "2016-08-31T01:06:55.265Z",
         "modified_at": "2017-06-12T01:59:02.925Z",
-        "modified_by": 1,
         "weeks_start": 0,
         "weeks_finish": 14,
         "subject": "Pregnancy weeks 0 to 14",
@@ -20,7 +19,6 @@
     "fields": {
         "created_at": "2016-08-31T01:07:01.760Z",
         "modified_at": "2017-06-12T01:59:41.518Z",
-        "modified_by": 1,
         "weeks_start": 15,
         "weeks_finish": 30,
         "subject": "Pregnancy weeks 15 to 30",
@@ -35,7 +33,6 @@
     "fields": {
         "created_at": "2016-08-31T01:07:09.560Z",
         "modified_at": "2017-06-12T02:00:06.974Z",
-        "modified_by": 1,
         "weeks_start": 31,
         "weeks_finish": 39,
         "subject": "Pregnancy weeks 31 to birth",
@@ -50,7 +47,6 @@
     "fields": {
         "created_at": "2016-08-31T01:06:55.265Z",
         "modified_at": "2017-06-12T02:00:34.232Z",
-        "modified_by": 1,
         "weeks_start": 40,
         "weeks_finish": 45,
         "subject": "New baby weeks 1 to 6",
@@ -65,7 +61,6 @@
     "fields": {
         "created_at": "2016-08-31T01:07:01.760Z",
         "modified_at": "2017-06-12T02:13:45.273Z",
-        "modified_by": 1,
         "weeks_start": 46,
         "weeks_finish": 52,
         "subject": "Baby 6 weeks to 3 months",
@@ -80,7 +75,6 @@
     "fields": {
         "created_at": "2016-08-31T01:07:09.560Z",
         "modified_at": "2017-06-12T02:14:06.225Z",
-        "modified_by": 1,
         "weeks_start": 53,
         "weeks_finish": 65,
         "subject": "Baby 3 months to 6 months",

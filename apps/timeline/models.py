@@ -74,8 +74,6 @@ class PhaseMetadataManager(models.Manager):
 
 
 class PhaseMetadata(TimeStampedModel):
-    modified_by = models.ForeignKey(User)
-
     weeks_start = models.IntegerField()
     weeks_finish = models.IntegerField()
 

@@ -1,29 +1,33 @@
-from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 
 
-def send_mail(subject, text_message, from_email, recipient_list,
-              fail_silently=False, auth_user=None, auth_password=None,
-              connection=None, html_message=None, reply_to=None, headers=None):
+def build_email_message(subject, text_message, recipient_list, html_message=None):
     """
-    Override Django default send_mail to expose more parameters.
+    Build a EmailMultiAlternatives object.
 
-    Keep the interface compatible with django built-in one.
+    To support the Return-Path email address, we have to build
+    the email message in a unusual way:
+
+    - use RETURN_PATH_EMAIL as from_email
+    - use DEFAULT_FROM_EMAIL as From in header
+
+    For more details, refer to:
+
+        https://code.djangoproject.com/ticket/9214
+
     """
-    connection = connection or get_connection(
-        username=auth_user,
-        password=auth_password,
-        fail_silently=fail_silently,
-    )
     mail = EmailMultiAlternatives(
-        subject, text_message, from_email, recipient_list,
-        connection=connection, reply_to=reply_to, headers=headers
-    )
+        subject=subject,
+        body=text_message,
+        from_email=settings.RETURN_PATH_EMAIL,  # NOTE: this is unusual
+        to=recipient_list,
+        headers={'From': settings.DEFAULT_FROM_EMAIL}, # NOTE: this is unusual
+        reply_to=[settings.REPLY_TO_EMAIL])
     if html_message:
         mail.attach_alternative(html_message, 'text/html')
-
-    return mail.send()
+    return mail
 
 
 def ses_send_mail(subject, text_message, recipient_list, html_message=None):
@@ -40,19 +44,7 @@ def ses_send_mail(subject, text_message, recipient_list, html_message=None):
 
     Refer to: https://code.djangoproject.com/ticket/9214
     """
-    from_email = settings.DEFAULT_FROM_EMAIL
-    reply_to_email = settings.REPLY_TO_EMAIL
-    return_path_email = settings.RETURN_PATH_EMAIL
-
-    return send_mail(
-        subject,
-        text_message,
-        return_path_email,
-        recipient_list,
-        html_message=html_message,
-        reply_to=[reply_to_email],
-        headers={'From': from_email}
-    )
+    return build_email_message(subject, text_message, recipient_list, html_message=html_message).send()
 
 
 def ses_send_templated_mail(template, recipient_list, context={}):

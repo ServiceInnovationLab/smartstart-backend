@@ -30,6 +30,8 @@ class Preference(models.Model):
 class Profile(TimeStampedModel):
     user = AutoOneToOneField(User)
     dob = models.DateField(verbose_name="Date of Birth", blank=True, null=True)
+    # this field is not used so far, we are using the preference with key `dd` for now.
+    due_date = models.DateField(blank=True, null=True)
     subscribed = models.BooleanField(default=True)
     logon_attributes_token = models.TextField(blank=True)
 
@@ -48,12 +50,14 @@ class Profile(TimeStampedModel):
         return self.set_preference('dd', due_date_str)
 
     def get_due_date(self):
-        """Get due date value from preference and convert to date"""
+        """Get due date"""
+        # migrate to this new field other then use preference
+        if self.due_date:
+            return self.due_date
         due_date_str = self.get_preference('dd')
         if due_date_str:
             return datetime.strptime(due_date_str, '%Y-%m-%d').date()
-        else:
-            return None
+        return None
 
     def get_pregnancy_helper(self, due_date=None):
         due_date = due_date or self.get_due_date()

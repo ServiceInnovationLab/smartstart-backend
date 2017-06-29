@@ -111,6 +111,20 @@ class MailStatus(Choice):
     noemail = 'No Email'
 
 
+class NotificationManager(models.Manager):
+
+    def waiting(self):
+        return self.get_queryset().filter(status=MailStatus.todo.name)
+
+    def send_all(self):
+        for n in self.waiting():
+            try:
+                n.send()
+            except Exception as e:
+                log.error(str(e))
+                continue
+
+
 class Notification(TimeStampedModel):
     phase = models.ForeignKey(PhaseMetadata)
     user = models.ForeignKey(User)
@@ -122,6 +136,8 @@ class Notification(TimeStampedModel):
         choices=MailStatus.choices(),
         default=MailStatus.todo.name
     )
+
+    objects = NotificationManager()
 
     class Meta:
         unique_together = ['user', 'phase', 'due_date']

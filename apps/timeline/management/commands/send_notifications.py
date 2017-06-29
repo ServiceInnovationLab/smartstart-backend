@@ -2,10 +2,12 @@ import sys
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from apps.base.models import SiteLocker
-from ...models import Notification, MailStatus
+from apps.accounts.models import Profile
+from apps.timeline.models import Notification
 
 import logging
 log = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = "Send notifications via email, every 5 mins between 9 and 22"
@@ -24,16 +26,10 @@ class Command(BaseCommand):
             log.info('Aborting, another sending task is running')
             sys.exit(1)
 
-        notifications = Notification.objects.filter(status=MailStatus.todo.name)
-        if not notifications.exists():
-            log.info('No notifications to send')
-            sys.exit(0)
-
         try:
             locker.lock(lock)
-            for n in notifications:
-                # send method has try/except in it, no need to catch again
-                n.send()
+            Profile.objects.generate_notifications()
+            Notification.objects.send_all()
         finally:
             # clear lock once done, even failed
             locker.unlock(lock)

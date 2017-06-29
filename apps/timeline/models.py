@@ -5,10 +5,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.core.mail import EmailMultiAlternatives, get_connection
 
 from mistune import markdown
 from apps.base.models import TimeStampedModel, Choice
-from apps.base.mail import ses_send_mail
+from apps.base.mail import build_email_message
 import logging
 log = logging.getLogger(__name__)
 
@@ -117,12 +118,20 @@ class NotificationManager(models.Manager):
         return self.get_queryset().filter(status=MailStatus.pending.name)
 
     def send_all(self):
-        for n in self.pending():
-            try:
-                n.send()
-            except Exception as e:
-                log.error(str(e))
-                continue
+        """
+        Send emails for all pending notifications in batch.
+
+        Establishing and closing an SMTP connection is an expensive process.
+        This function will send all emails with one connection.
+
+        The send_messages method will open a connection on the backend,
+        sends the list of messages, and then closes the connection again.
+        """
+        notifications = self.pending()  # cache here for later use
+        messages = [n.build_email_message() for n in notifications]
+        connection = get_connection()
+        connection.send_messages(messages)
+        notifications.update(status=MailStatus.delivered.name)
 
 
 class Notification(TimeStampedModel):
@@ -167,30 +176,19 @@ class Notification(TimeStampedModel):
             }
         )
 
-    def send(self):
-        if self.status != MailStatus.pending.name:
-            return
-        if not self.user.email:
-            self.status = MailStatus.noemail.name
-            self.save()
-            return
-        profile = self.user.profile
-        if not profile.subscribed:
-            self.status = MailStatus.unsubscribed.name
-            self.save()
-            return
+    def build_email_message(self):
+        """
+        Build a EmailMultiAlternatives object from notification.
+
+        This is a html mail, so has to use EmailMultiAlternatives,
+        which is a subclass of EmailMessage.
+
+        We have no text email template, so use html as text version.
+        """
         text_message = html_message = self.render_email_template()
-        try:
-            ses_send_mail(
-                self.phase.subject,
-                text_message,
-                [self.user.email],
-                html_message=html_message
-            )
-            # set it to devlivered directly
-            self.status = MailStatus.delivered.name
-            self.save()
-        except Exception as e:
-            log.error('Sending notification {} failed: {}'.format(self.id, e))
-            self.status = MailStatus.failed.name
-            self.save()
+        return build_email_message(
+            self.phase.subject,
+            text_message,
+            [self.email],
+            html_message=html_message
+        )

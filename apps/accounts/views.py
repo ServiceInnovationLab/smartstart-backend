@@ -49,7 +49,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = m.Profile
-        fields = ('url', 'subscribed')
+        fields = ('url', 'subscribed', 'due_date')
 
 
 class ProfileViewSet(viewsets.ModelViewSet):

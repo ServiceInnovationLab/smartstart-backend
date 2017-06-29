@@ -9,6 +9,7 @@ class ProfileInline(admin.StackedInline):
     model = m.Profile
     fields = [
         'subscribed',
+        'due_date',
         'logon_attributes_token',
     ]
 

@@ -1,4 +1,14 @@
-# vim:ff=unix ts=2 sw=2 ai expandtab
-test_env_build:
+unit_tests:
   script:
-    - curl -X POST -F token=$GITLAB_PIPELINE_TRIGGER_TOKEN -F ref=master -F "variables[UPSTREAM_TRIGGER]=BACKEND_PUSH" https://gitlab.catalyst.net.nz/api/v3/projects/42/trigger/builds
+    - /bin/bash bin/ci-unit-tests.sh
+
+  when: on_success
+
+  stage: test
+
+  # Cache the virtual environment per branch.
+  cache:
+    key: "$CI_BUILD_REF_NAME"
+    untracked: true
+    paths:
+      - venv/

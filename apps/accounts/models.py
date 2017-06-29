@@ -27,6 +27,36 @@ class Preference(models.Model):
         return '[{}] {}={}'.format(self.group, self.key, self.val)
 
 
+class ProfileManager(models.Manager):
+
+    def subscribers(self):
+        """
+        profiles for users who can be notified
+        """
+        user_ids = Preference.objects.filter(
+            key='dd',
+        ).values_list('user_id', flat=True)
+        q0 = models.Q(user__id__in=user_ids)
+        q1 = models.Q(due_date__isnull=False)
+        return self.get_queryset().filter(
+            subscribed=True,
+            user__email__isnull=False,
+        ).exclude(
+            user__email='',
+        ).filter(q0 | q1).distinct()
+
+    def generate_notifications(self, ref_date=None):
+        """
+        Generate notifications for all subscribers
+        """
+        for p in self.subscribers():
+            try:
+                p.generate_notifications(ref_date=ref_date)
+            except Exception as e:
+                log.error(str(e))
+                continue
+
+
 class Profile(TimeStampedModel):
     user = AutoOneToOneField(User)
     dob = models.DateField(verbose_name="Date of Birth", blank=True, null=True)
@@ -35,8 +65,10 @@ class Profile(TimeStampedModel):
     subscribed = models.BooleanField(default=True)
     logon_attributes_token = models.TextField(blank=True)
 
+    objects = ProfileManager()
+
     def __str__(self):
-        return self.user.get_full_name()
+        return self.user.username
 
     def set_preference(self, key, val):
         Preference.objects.update_or_create(user=self.user, key=key, defaults={'val': val})
@@ -63,7 +95,7 @@ class Profile(TimeStampedModel):
         due_date = due_date or self.get_due_date()
         return PregnancyHelper(due_date) if due_date else None
 
-    def generate_notifications(self, weeks_before=1, ref_date=None):
+    def generate_notifications(self, weeks_before=1, ref_date=None, send=False):
         """
         Generate notificaiton for user.
 
@@ -102,6 +134,8 @@ class Profile(TimeStampedModel):
                 'email': self.user.email,
             }
         )
+        if send:
+            notification.send()
         return notification
 
     def dump_preferences(self):

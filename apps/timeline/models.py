@@ -103,21 +103,21 @@ class PhaseMetadata(TimeStampedModel):
 
 
 class MailStatus(Choice):
-    todo = 'Waiting'
-    sending = 'Sending'
-    delivered = 'Delivered'
-    failed = 'Failed'
-    unsubscribed = 'Unsubscribed'
-    noemail = 'No Email'
+    pending = 'pending'
+    sending = 'sending'
+    delivered = 'delivered'
+    failed = 'failed'
+    unsubscribed = 'unsubscribed'
+    noemail = 'noemail'
 
 
 class NotificationManager(models.Manager):
 
-    def waiting(self):
-        return self.get_queryset().filter(status=MailStatus.todo.name)
+    def pending(self):
+        return self.get_queryset().filter(status=MailStatus.pending.name)
 
     def send_all(self):
-        for n in self.waiting():
+        for n in self.pending():
             try:
                 n.send()
             except Exception as e:
@@ -134,7 +134,7 @@ class Notification(TimeStampedModel):
     status = models.CharField(
         max_length=20,
         choices=MailStatus.choices(),
-        default=MailStatus.todo.name
+        default=MailStatus.pending.name
     )
 
     objects = NotificationManager()
@@ -168,7 +168,7 @@ class Notification(TimeStampedModel):
         )
 
     def send(self):
-        if self.status != MailStatus.todo.name:
+        if self.status != MailStatus.pending.name:
             return
         if not self.user.email:
             self.status = MailStatus.noemail.name

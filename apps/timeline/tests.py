@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.core.management import call_command
 from apps.base.tests import BaseTestCase
+from apps.accounts.models import Profile
 from apps.timeline import models as m
 
 
@@ -51,7 +52,7 @@ class PhaseMetadataTestCase(BaseTestCase):
         # call for today
         # no due date, should not create
         ref_date = today
-        call_command('generate_notifications', date=ref_date.isoformat())
+        Profile.objects.generate_notifications(ref_date=ref_date)
         self.assertEqual(profile.get_due_date(), None)
         self.assertFalse(user.notification_set.exists())
 
@@ -59,10 +60,10 @@ class PhaseMetadataTestCase(BaseTestCase):
         profile.set_due_date(due_date)
         self.assertEqual(profile.get_due_date(), due_date)
 
-        call_command('generate_notifications', date=ref_date.isoformat())
+        Profile.objects.generate_notifications(ref_date=ref_date)
         n = user.notification_set.get(phase_id=1)
         self.assertEqual(user.notification_set.count(), 1)
-        self.assertEqual(n.status, 'todo')
+        self.assertEqual(n.status, 'pending')
 
         call_command('send_notifications')
         n = user.notification_set.get(phase_id=1)
@@ -70,24 +71,24 @@ class PhaseMetadataTestCase(BaseTestCase):
 
         # call again 1 week later, should not do anything
         ref_date = today + timedelta(weeks=1)
-        call_command('generate_notifications', date=ref_date.isoformat())
+        Profile.objects.generate_notifications(ref_date=ref_date)
         self.assertEqual(user.notification_set.count(), 1)
         n = user.notification_set.get(phase_id=1)
         self.assertEqual(n.status, 'delivered')
 
         # call again 14 weeks later, which is 1 week before phase 2: 15~30 weeks
         ref_date = today + timedelta(weeks=14)
-        call_command('generate_notifications', date=ref_date.isoformat())
+        Profile.objects.generate_notifications(ref_date=ref_date)
         # should get a new notification for phase 2
         self.assertEqual(user.notification_set.count(), 2)
         n = user.notification_set.get(phase_id=2)
-        self.assertEqual(n.status, 'todo')
+        self.assertEqual(n.status, 'pending')
 
         # call again 31 weeks and 2 days later
         # for some reason cron job is 2 days late, should still work
         ref_date = today + timedelta(weeks=31, days=2)
-        call_command('generate_notifications', date=ref_date.isoformat())
+        Profile.objects.generate_notifications(ref_date=ref_date)
         # should get a new notification for phase 3
         self.assertEqual(user.notification_set.count(), 3)
         n = user.notification_set.get(phase_id=3)
-        self.assertEqual(n.status, 'todo')
+        self.assertEqual(n.status, 'pending')

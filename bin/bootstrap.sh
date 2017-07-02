@@ -5,10 +5,8 @@ set -x  # echo on
 # didn't prepend `sudo` before each line
 # since while in docker, sudo is not installed by default
 
-apt-get update
-apt-get install -y vim libxml2-dev libxslt1-dev zlib1g-dev libxmlsec1-dev xmlsec1 pkg-config python3-dev python-pip
-apt-get autoremove -y
-apt-get clean
+sudo apt-get update -y
+sudo apt-get install -y vim libxml2-dev libxslt1-dev zlib1g-dev libxmlsec1-dev xmlsec1 pkg-config python3-dev python-pip
 
 pip install -U pip
-pip install -U virtualenv
+pip install -U virtualenv virtualenvwrapper

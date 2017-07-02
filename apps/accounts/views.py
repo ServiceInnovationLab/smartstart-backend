@@ -59,6 +59,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = m.Profile.objects.none()
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'patch']
 
     def get_queryset(self):
         return m.Profile.objects.filter(user=self.request.user)

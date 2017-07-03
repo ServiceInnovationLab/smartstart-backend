@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.core.management import call_command
 from apps.base.tests import BaseTestCase
-from apps.accounts.models import Profile
+from apps.accounts.models import UserProxy
 from apps.timeline import models as m
 
 
@@ -44,7 +44,6 @@ class PhaseMetadataTestCase(BaseTestCase):
         Today, user knows she is pregnant 30 days ago.
         """
         user = self.test
-        profile = user.profile
         today = date.today()
         pregnancy_date = today - timedelta(days=30)
         due_date = pregnancy_date + timedelta(weeks=40)
@@ -52,15 +51,15 @@ class PhaseMetadataTestCase(BaseTestCase):
         # call for today
         # no due date, should not create
         ref_date = today
-        Profile.objects.generate_notifications(ref_date=ref_date)
-        self.assertEqual(profile.get_due_date(), None)
+        UserProxy.objects.generate_notifications(ref_date=ref_date)
+        self.assertEqual(user.due_date, None)
         self.assertFalse(user.notification_set.exists())
 
         # set due date
-        profile.set_due_date(due_date)
-        self.assertEqual(profile.get_due_date(), due_date)
+        user.set_due_date(due_date)
+        self.assertEqual(user.due_date, due_date)
 
-        Profile.objects.generate_notifications(ref_date=ref_date)
+        UserProxy.objects.generate_notifications(ref_date=ref_date)
         n = user.notification_set.get(phase_id=1)
         self.assertEqual(user.notification_set.count(), 1)
         self.assertEqual(n.status, 'pending')
@@ -71,14 +70,14 @@ class PhaseMetadataTestCase(BaseTestCase):
 
         # call again 1 week later, should not do anything
         ref_date = today + timedelta(weeks=1)
-        Profile.objects.generate_notifications(ref_date=ref_date)
+        UserProxy.objects.generate_notifications(ref_date=ref_date)
         self.assertEqual(user.notification_set.count(), 1)
         n = user.notification_set.get(phase_id=1)
         self.assertEqual(n.status, 'delivered')
 
         # call again 14 weeks later, which is 1 week before phase 2: 15~30 weeks
         ref_date = today + timedelta(weeks=14)
-        Profile.objects.generate_notifications(ref_date=ref_date)
+        UserProxy.objects.generate_notifications(ref_date=ref_date)
         # should get a new notification for phase 2
         self.assertEqual(user.notification_set.count(), 2)
         n = user.notification_set.get(phase_id=2)
@@ -87,7 +86,7 @@ class PhaseMetadataTestCase(BaseTestCase):
         # call again 31 weeks and 2 days later
         # for some reason cron job is 2 days late, should still work
         ref_date = today + timedelta(weeks=31, days=2)
-        Profile.objects.generate_notifications(ref_date=ref_date)
+        UserProxy.objects.generate_notifications(ref_date=ref_date)
         # should get a new notification for phase 3
         self.assertEqual(user.notification_set.count(), 3)
         n = user.notification_set.get(phase_id=3)

@@ -27,7 +27,7 @@ admin.site.site_header = 'SmartStart'
 
 router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
-router.register(r'profile', accounts_views.ProfileViewSet)
+# router.register(r'profile', accounts_views.ProfileViewSet)
 router.register(r'preferences', accounts_views.PreferenceViewSet)
 router.register(r'emailaddresses', accounts_views.EmailAddressViewSet)
 router.register(r'phase-metadata', timeline_views.PhaseMetadataViewSet)

@@ -2,16 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from . import models as m
-
 admin.site.unregister(User)
-
-class ProfileInline(admin.StackedInline):
-    model = m.Profile
-    fields = [
-        'subscribed',
-        'due_date',
-        'logon_attributes_token',
-    ]
 
 
 class PreferenceInline(admin.TabularInline):
@@ -26,10 +17,10 @@ class EmailAddressInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(User)
-class UserAdminPlus(UserAdmin):
+@admin.register(m.UserProxy)
+class UserProxyAdmin(UserAdmin):
     list_display = ['username', 'date_joined', 'email', 'subscribed', 'due_date']
-    inlines = [ProfileInline, PreferenceInline, EmailAddressInline]
+    inlines = [PreferenceInline, EmailAddressInline]
     date_hierarchy = 'date_joined'
 
     actions = ['generate_notifications']
@@ -39,7 +30,7 @@ class UserAdminPlus(UserAdmin):
             user.profile.generate_notifications()
 
     def due_date(self, user):
-        helper = user.profile.get_pregnancy_helper()
+        helper = user.get_pregnancy_helper()
         if helper:
             phase = helper.get_due_phase(weeks_before=0)
             return '{}({} weeks, phase {})'.format(

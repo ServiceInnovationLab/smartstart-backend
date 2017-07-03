@@ -8,56 +8,54 @@ from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
 from apps.base.utils import get_full_url
 from apps.base.mail import ses_send_templated_mail
-from apps.timeline.models import PhaseMetadata, PregnancyHelper
 
 import logging
 log = logging.getLogger(__name__)
 
 
-class Preference(models.Model):
-    user = models.ForeignKey(User)
-    group = models.CharField(max_length=50, default='settings')
-    key = models.SlugField(max_length=50)
-    val = models.CharField(max_length=200, blank=True)
-
-    class Meta:
-        unique_together = ('user', 'group', 'key')
-
-    def __str__(self):
-        return '[{}] {}={}'.format(self.group, self.key, self.val)
-
-
-class ProfileManager(models.Manager):
+class UserProxyManager(models.Manager):
 
     def subscribers(self):
         """
-        profiles for users who can be notified
+        Users who:
+        - have email
+        - have due_date
+        - have no subscribed = 'false'
         """
-        user_ids = Preference.objects.filter(
+        users_with_due_date = Preference.objects.filter(
             key='dd',
+            val__regex=r'\d{4}-\d{1,2}-\d{1,2}'
         ).values_list('user_id', flat=True)
-        q0 = models.Q(user__id__in=user_ids)
-        q1 = models.Q(due_date__isnull=False)
+
+        users_subscribed_false = Preference.objects.filter(
+            key='subscribed',
+            val='false'
+        ).values_list('user_id', flat=True)
+
         return self.get_queryset().filter(
-            subscribed=True,
-            user__email__isnull=False,
+            id__in=users_with_due_date,
         ).exclude(
-            user__email='',
-        ).filter(q0 | q1).distinct()
+            email='',
+        ).exclude(
+            email__isnull=True,
+        ).exclude(
+            id__in=users_subscribed_false,
+        ).distinct()
 
     def generate_notifications(self, ref_date=None):
         """
         Generate notifications for all subscribers
         """
-        for p in self.subscribers():
+        for u in self.subscribers():
             try:
-                p.generate_notifications(ref_date=ref_date)
+                u.generate_notifications(ref_date=ref_date)
             except Exception as e:
                 log.error(str(e))
                 continue
 
 
 class Profile(TimeStampedModel):
+    """Not used any more"""
     user = AutoOneToOneField(User)
     dob = models.DateField(verbose_name="Date of Birth", blank=True, null=True)
     # this field is not used so far, we are using the preference with key `dd` for now.
@@ -65,34 +63,52 @@ class Profile(TimeStampedModel):
     subscribed = models.BooleanField(default=True)
     logon_attributes_token = models.TextField(blank=True)
 
-    objects = ProfileManager()
-
     def __str__(self):
         return self.user.username
 
-    def set_preference(self, key, val):
-        Preference.objects.update_or_create(user=self.user, key=key, defaults={'val': val})
 
-    def get_preference(self, key):
-        pref =  Preference.objects.filter(user=self.user, key=key).first()
-        return pref.val if pref else None
+class UserProxy(User):
+    objects = UserProxyManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
+    def set_preference(self, key, val):
+        Preference.objects.update_or_create(user=self, key=key, defaults={'val': val})
+
+    def get_preference(self, key, default=None):
+        pref =  Preference.objects.filter(user=self, key=key).first()
+        return pref.val if pref else default
 
     def set_due_date(self, due_date):
         due_date_str = due_date.strftime('%Y-%m-%d')
         return self.set_preference('dd', due_date_str)
 
-    def get_due_date(self):
-        """Get due date"""
-        # migrate to this new field other then use preference
-        if self.due_date:
-            return self.due_date
+    @property
+    def due_date(self):
         due_date_str = self.get_preference('dd')
         if due_date_str:
-            return datetime.strptime(due_date_str, '%Y-%m-%d').date()
+            try:
+                return datetime.strptime(due_date_str, '%Y-%m-%d').date()
+            except:
+                pass
         return None
 
+    def subscribe(self):
+        return self.set_preference('subscribed', 'true')
+
+    def unsubscribe(self):
+        return self.set_preference('subscribed', 'false')
+
+    @property
+    def subscribed(self):
+        return self.get_preference('subscribed', default='true') == 'true'
+
     def get_pregnancy_helper(self, due_date=None):
-        due_date = due_date or self.get_due_date()
+        from apps.timeline.models import PregnancyHelper
+        due_date = due_date or self.due_date
         return PregnancyHelper(due_date) if due_date else None
 
     def generate_notifications(self, weeks_before=1, ref_date=None, send=False):
@@ -101,11 +117,11 @@ class Profile(TimeStampedModel):
 
         This method will be trigged by a daily cron job.
         """
+        if not self.email:
+            return
         if not self.subscribed:
             return
-        if not self.user.email:
-            return
-        due_date = self.get_due_date()
+        due_date = self.due_date
         if not due_date:
             return
 
@@ -118,7 +134,7 @@ class Profile(TimeStampedModel):
             return
 
         # notifications generated for this phase but other due date should be deleted
-        self.user.notification_set.filter(
+        self.notification_set.filter(
             phase=phase
         ).exclude(
             due_date=due_date
@@ -127,11 +143,11 @@ class Profile(TimeStampedModel):
         if not phase.subject:
             return
 
-        notification, created = self.user.notification_set.get_or_create(
+        notification, created = self.notification_set.get_or_create(
             phase=phase,
             due_date=due_date,
             defaults={
-                'email': self.user.email,
+                'email': self.email,
             }
         )
         if send:
@@ -141,13 +157,13 @@ class Profile(TimeStampedModel):
     def dump_preferences(self):
         from collections import defaultdict
         preferences = defaultdict(dict)
-        for pref in Preference.objects.filter(user=self.user):
+        for pref in Preference.objects.filter(user_id=self.id):
             preferences[pref.group][pref.key] = pref.val
         return preferences
 
     @property
     def unsubscribe_url(self):
-        full_token = TimestampSigner().sign(self.user_id)
+        full_token = TimestampSigner().sign(self.id)
         user_id, token = full_token.split(":", 1)
         url = reverse(
             'accounts:unsubscribe',
@@ -155,6 +171,19 @@ class Profile(TimeStampedModel):
         )
         # must return full url since it's in email.
         return get_full_url(url)
+
+
+class Preference(models.Model):
+    user = models.ForeignKey(UserProxy)
+    group = models.CharField(max_length=50, default='settings')
+    key = models.SlugField(max_length=50)
+    val = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'group', 'key')
+
+    def __str__(self):
+        return '[{}] {}={}'.format(self.group, self.key, self.val)
 
 
 class EmailAddress(models.Model):
@@ -168,7 +197,7 @@ class EmailAddress(models.Model):
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProxy)
     email = models.CharField(max_length=140)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -201,8 +230,6 @@ class EmailAddress(models.Model):
             user.email = self.email
             user.save(update_fields=['email'])
             # while confirm new email, subscribe
-            profile = user.profile
-            profile.subscribed = True
-            profile.save(update_fields=['subscribed'])
+            user.subscribe()
         # delete all of them
         user.emailaddress_set.all().delete()

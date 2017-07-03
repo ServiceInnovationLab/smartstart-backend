@@ -1,6 +1,6 @@
 import json
 from django.test import TestCase, override_settings
-from django.contrib.auth.models import User
+from apps.accounts.models import UserProxy
 
 class BaseTestCase(TestCase):
     fixtures = [
@@ -9,8 +9,8 @@ class BaseTestCase(TestCase):
     ]
 
     def setUp(self):
-        self.admin = User.objects.get(username='admin')
-        self.test = User.objects.get(username='test')
+        self.admin = UserProxy.objects.get(username='admin')
+        self.test = UserProxy.objects.get(username='test')
 
         self.api_preferences = '/api/preferences/'
         self.api_users = '/api/users/'

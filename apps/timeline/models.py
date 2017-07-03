@@ -10,6 +10,7 @@ from django.core.mail import EmailMultiAlternatives, get_connection
 from mistune import markdown
 from apps.base.models import TimeStampedModel, Choice
 from apps.base.mail import build_email_message
+from apps.accounts.models import UserProxy
 import logging
 log = logging.getLogger(__name__)
 
@@ -136,7 +137,7 @@ class NotificationManager(models.Manager):
 
 class Notification(TimeStampedModel):
     phase = models.ForeignKey(PhaseMetadata)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProxy)
     due_date = models.DateField(help_text="User's due date while this notification is created")
 
     email = models.EmailField(help_text="User's email while this notification is created")

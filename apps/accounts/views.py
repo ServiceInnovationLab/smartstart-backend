@@ -7,6 +7,7 @@ from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
 from apps.realme.views import login as realme_login
+from apps.accounts.models import UserProxy
 from . import models as m
 
 import logging
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
+        model = UserProxy
         fields = ('url', 'username', 'email', 'is_staff')
 
 
@@ -27,22 +28,20 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     An extra endpoint is added to return user profile at `/api/users/me/`
 
     """
-    queryset = User.objects.none()
+    queryset = UserProxy.objects.none()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+        return UserProxy.objects.filter(id=self.request.user.id)
 
     @decorators.list_route(methods=['get'])
     def me(self, request):
         """Owner only and ReadOnly"""
-        user = request.user
-        profile = user.profile
+        user = UserProxy.objects.get(id=request.user.id)
         user_serializer = self.serializer_class(user, context={'request': request})
         user_data = user_serializer.data
-        user_data['preferences'] = profile.dump_preferences()
-        user_data['profile'] = ProfileSerializer(user.profile, context={'request': request}).data
+        user_data['preferences'] = user.dump_preferences()
         return response.Response(user_data)
 
 
@@ -169,7 +168,7 @@ def unsubscribe(request, user_id, token):
 
     # it can be different from current user
     target_user = get_object_or_404(
-        User,
+        UserProxy,
         id=user_id,
         is_active=True
     )
@@ -198,7 +197,7 @@ def unsubscribe(request, user_id, token):
             }
         )
     else:
-        m.Profile.objects.filter(user_id=user_id).update(subscribed=False)
+        target_user.unsubscribe()
         return render(
             request,
             'accounts/unsubscribed.html',

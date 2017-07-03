@@ -2,7 +2,7 @@ import sys
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from apps.base.models import SiteLocker
-from apps.accounts.models import Profile
+from apps.accounts.models import UserProxy
 from apps.timeline.models import Notification
 
 import logging
@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         try:
             locker.lock(lock)
-            Profile.objects.generate_notifications()
+            UserProxy.objects.generate_notifications()
             Notification.objects.send_all()
         finally:
             # clear lock once done, even failed

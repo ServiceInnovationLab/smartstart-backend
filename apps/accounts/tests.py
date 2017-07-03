@@ -3,7 +3,7 @@ from datetime import date
 from django.core import mail
 from django.test import override_settings
 from apps.base.tests import BaseTestCase
-from apps.accounts.models import Preference, EmailAddress
+from apps.accounts.models import UserProxy, Preference, EmailAddress
 
 
 class SessionTestCase(BaseTestCase):
@@ -76,15 +76,13 @@ class PreferenceTestCase(BaseTestCase):
         self.login('test')
         obj = {'group': 'settings', 'key': 'dd', 'val': '2016-10-28'}
         self.post_json(self.api_preferences, obj, expected=201)
-        self.assertEqual(self.test.profile.get_due_date(), date(2016, 10, 28))
+        self.assertEqual(self.test.due_date, date(2016, 10, 28))
 
     def test_unsubscribe(self):
-        profile = self.test.profile
-        profile.subscribed = True
-        profile.save()
-        self.client.get(profile.unsubscribe_url)
-        profile.refresh_from_db()
-        self.assertFalse(profile.subscribed)
+        user = self.test
+        self.client.get(user.unsubscribe_url)
+        user.refresh_from_db()
+        self.assertFalse(user.subscribed)
 
 
 class AccountTestCase(BaseTestCase):
@@ -97,9 +95,7 @@ class AccountTestCase(BaseTestCase):
         user = self.test
         user.email = ''
         user.save()
-        profile = user.profile
-        profile.subscribed = False
-        profile.save()
+        user.subscribe()
 
         # change mail via API
         self.login('test')
@@ -118,9 +114,8 @@ class AccountTestCase(BaseTestCase):
         # click url
         self.client.get(obj.confirm_url)
         user.refresh_from_db()
-        profile.refresh_from_db()
         self.assertEqual(user.email, data['email'])
-        self.assertTrue(profile.subscribed)
+        self.assertTrue(user.subscribed)
         self.assertEqual(EmailAddress.objects.count(), 0)
 
         # now change again
@@ -131,3 +126,49 @@ class AccountTestCase(BaseTestCase):
         self.client.get(obj.confirm_url)
         user.refresh_from_db()
         self.assertEqual(user.email, data['email'])
+
+    def test_subscribers_filter(self):
+        user = self.test
+        self.assertGreater(len(user.email), 5)
+        # by default, user has no due date and no subscribe pref
+
+        # no due date, not a subscriber
+        self.assertNotIn(user, UserProxy.objects.subscribers())
+
+        user.set_due_date(date.today())
+        # user has due date now, although he has no subscribed pref
+        # but it should default to true
+        self.assertIn(user, UserProxy.objects.subscribers())
+
+        user.subscribe()
+        # subscribe explicitly
+        self.assertIn(user, UserProxy.objects.subscribers())
+
+        user.unsubscribe()
+        # ubsubscribe explicitly
+        self.assertNotIn(user, UserProxy.objects.subscribers())
+
+        # no email
+        user.subscribe()
+        user.email = ''
+        user.save()
+        self.assertNotIn(user, UserProxy.objects.subscribers())
+
+    def test_invalid_due_date_str(self):
+        user = self.test
+        # defaults to true
+        self.assertTrue(user.subscribed)
+
+        # wrong format, not a date
+        user.set_preference('dd', 'hello')
+        self.assertNotIn(user, UserProxy.objects.subscribers())
+        self.assertIsNone(user.due_date)
+
+        # a date with unstandard format(YYYY-mm-dd)
+        user.set_preference('dd', '2016-1-1')
+        self.assertIn(user, UserProxy.objects.subscribers())
+        self.assertIsNotNone(user.due_date)
+
+        # correct format
+        user.set_preference('dd', '2016-10-28')
+        self.assertIn(user, UserProxy.objects.subscribers())

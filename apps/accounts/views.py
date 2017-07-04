@@ -137,6 +137,12 @@ class EmailAddressSerializer(serializers.HyperlinkedModelSerializer):
         model = m.EmailAddress
         fields = ('url', 'email', 'created_at')
 
+    def create(self, validated_data):
+        obj, created  = self.Meta.model.objects.get_or_create(**validated_data)
+        if obj.has_email_changed:  # TODO: check created? not sure.
+            obj.send_confirm_email()
+        return obj
+
 
 class EmailAddressViewSet(viewsets.ModelViewSet):
     """
@@ -151,8 +157,6 @@ class EmailAddressViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         obj = serializer.save(user=self.request.user)
-        if obj.has_email_changed:
-            obj.send_confirm_email()
 
 
 def login_router(request):

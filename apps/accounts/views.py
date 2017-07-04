@@ -151,8 +151,8 @@ class EmailAddressViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         obj = serializer.save(user=self.request.user)
-        # TODO: celery task?
-        obj.send_confirm_email()
+        if obj.has_email_changed:
+            obj.send_confirm_email()
 
 
 def login_router(request):

@@ -209,6 +209,10 @@ class EmailAddress(models.Model):
         return '{}: {}'.format(self.user, self.email)
 
     @property
+    def has_email_changed(self):
+        return self.email != self.user.email
+
+    @property
     def confirm_url(self):
         url = reverse(
             'accounts:confirm',

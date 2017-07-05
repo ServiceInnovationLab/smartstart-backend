@@ -163,11 +163,10 @@ class UserProxy(User):
 
     @property
     def unsubscribe_url(self):
-        full_token = TimestampSigner().sign(self.id)
-        user_id, token = full_token.split(":", 1)
+        token = TimestampSigner().sign(self.id)
         url = reverse(
             'accounts:unsubscribe',
-            kwargs={'user_id': user_id, 'token': token}
+            kwargs={'token': token}
         )
         # must return full url since it's in email.
         return get_full_url(url)

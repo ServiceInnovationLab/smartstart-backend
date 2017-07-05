@@ -168,19 +168,12 @@ def login_router(request):
         return auth_login(request)
 
 
-def unsubscribe(request, user_id, token):
+def unsubscribe(request, token):
 
-    # it can be different from current user
-    target_user = get_object_or_404(
-        UserProxy,
-        id=user_id,
-        is_active=True
-    )
     message = ''
     try:
-        key = '{}:{}'.format(user_id, token)
         # Valid for 7 days, move to settings when necessary.
-        TimestampSigner().unsign(key, max_age=60 * 60 * 24 * 7)
+        TimestampSigner().unsign(token, max_age=60 * 60 * 24 * 7)
     except SignatureExpired:
         # note: this must be before BadSignature
         # otherwise the code will always catch BadSignature exception.
@@ -201,6 +194,13 @@ def unsubscribe(request, user_id, token):
             }
         )
     else:
+        # it can be different from current user
+        user_id = token.split(':')[0]
+        target_user = get_object_or_404(
+            UserProxy,
+            id=user_id,
+            is_active=True
+        )
         target_user.unsubscribe()
         return render(
             request,

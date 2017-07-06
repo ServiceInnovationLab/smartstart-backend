@@ -218,7 +218,7 @@ def confirm(request, uuid):
     ]
     return render(
         request,
-        'accounts/message.html',
+        'accounts/signup-confirmed.html',
         context={
             'title': 'Sign-up confirmed.',
             'lines': lines,

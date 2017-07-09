@@ -29,6 +29,5 @@ class NotificationAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
     def send_email(self, request, queryset):
-        for n in queryset:
-            n.send()
+        m.Notification.objects.send_all(notifications=queryset)
     send_email.short_description = "Send email for selected notifications"

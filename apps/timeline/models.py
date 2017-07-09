@@ -118,7 +118,7 @@ class NotificationManager(models.Manager):
     def pending(self):
         return self.get_queryset().filter(status=MailStatus.pending.name)
 
-    def send_all(self):
+    def send_all(self, notifications=None):
         """
         Send emails for all pending notifications in batch.
 
@@ -128,7 +128,7 @@ class NotificationManager(models.Manager):
         The send_messages method will open a connection on the backend,
         sends the list of messages, and then closes the connection again.
         """
-        notifications = self.pending()  # cache here for later use
+        notifications = notifications or self.pending()  # cache here for later use
         messages = [n.build_email_message() for n in notifications]
         connection = get_connection()
         connection.send_messages(messages)

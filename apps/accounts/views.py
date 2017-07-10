@@ -8,6 +8,7 @@ from rest_framework import viewsets, response, decorators, serializers, permissi
 
 from apps.realme.views import login as realme_login
 from apps.accounts.models import UserProxy
+from utils import set_exchange_cookie
 from . import models as m
 
 import logging
@@ -178,21 +179,16 @@ def unsubscribe(request, token):
         # note: this must be before BadSignature
         # otherwise the code will always catch BadSignature exception.
         # since SignatureExpired is subclass of BadSignature
-        message = 'Unsubscribe token expired'
+        message = 'unsubscribe_token_expired'
     except BadSignature:
-        message = 'Invalid unsubscribe token'
+        message = 'unsubscribe_token_invalid'
     except Exception as e:
-        message = 'Unknown unsubscribe error'
+        message = 'unsubscribe_token_unknown_error'
 
     if message:
-        return render(
-            request,
-            'accounts/message.html',
-            context={
-                'title': 'Unsubscribe failed.',
-                'lines': [message],
-            }
-        )
+        # set cookie and redirect to homepage to display error
+        set_exchange_cookie(message)
+        return redirect('/')
     else:
         # it can be different from current user
         user_id = token.split(':')[0]
@@ -202,25 +198,10 @@ def unsubscribe(request, token):
             is_active=True
         )
         target_user.unsubscribe()
-        return render(
-            request,
-            'accounts/unsubscribed.html',
-            context={'user': target_user}
-        )
+        return redirect('/unsubscribed.html')
 
 
 def confirm(request, uuid):
     obj = get_object_or_404(m.EmailAddress, pk=uuid)
     obj.confirm()
-    lines = [
-        '{} has been signed-up to SmartStart To Do list reminders.'.format(obj.email),
-        'You can unsubscribe at any time from your SmartStart profile or the reminder emails.',
-    ]
-    return render(
-        request,
-        'accounts/message.html',
-        context={
-            'title': 'Sign-up confirmed.',
-            'lines': lines,
-        }
-    )
+    return redirect('/signup-confirmed.html')

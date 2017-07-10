@@ -198,10 +198,10 @@ def unsubscribe(request, token):
             is_active=True
         )
         target_user.unsubscribe()
-        return redirect('/error-pages/unsubscribed.html')
+        return redirect('/unsubscribed.html')
 
 
 def confirm(request, uuid):
     obj = get_object_or_404(m.EmailAddress, pk=uuid)
     obj.confirm()
-    return redirect('/error-pages/signup-confirmed.html')
+    return redirect('/signup-confirmed.html')

@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Email title</title><!-- TODO: update title -->
-<!--
-Email base from Discover
--->
+<title>{{phase.subject}}</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -74,25 +71,24 @@ Email base from Discover
     }
   }
 
-  /* TODO: link fonts */
   @font-face {
     font-family: 'FiraSansRegular';
-    src:url('assets/fonts/fira-sans-regular.woff2') format('woff2'),
-        url('assets/fonts/fira-sans-regular.woff') format('woff');
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-regular.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: 'FiraSans500';
-    src:url('assets/fonts/fira-sans-500.woff2') format('woff2'),
-        url('assets/fonts/fira-sans-500.woff') format('woff');
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-500.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-500.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: 'FiraSans700';
-    src:url('assets/fonts/fira-sans-700.woff2') format('woff2'),
-        url('assets/fonts/fira-sans-700.woff') format('woff');
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-700.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-700.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
@@ -129,9 +125,9 @@ Email base from Discover
                     <tr>
                       <td style="color: #4f4b46; padding: 35px 15px 170px 15px; position: relative">
                         <a href="" target="_blank" rel="noreferrer noopener" style="color: #4f4b46;">
-                          <img src="assets/img/smartstart-logo.png" width="174" height="40" alt="SmartStart" /><!-- TODO: update img path -->
+                          <img src="{{SITE_URL}}/assets/img/smartstart-logo-print.svg" width="174" height="40" alt="SmartStart" />
                         </a>
-                        <img src="assets/img/header-illustration.png" width="312" height="195" alt="Illustation of mother and baby playing on the grass" style="position: absolute; bottom: -44px; left: 50%; margin-left: -156px;"/><!-- TODO: update img path -->
+                        <img src="{{SITE_URL}}/assets/img/illustrations/header-illustration.png" width="312" height="195" alt="Illustation of mother and baby playing on the grass" style="position: absolute; bottom: -44px; left: 50%; margin-left: -156px;"/>
                       </td>
                     </tr>
                   </table>
@@ -207,17 +203,7 @@ Email base from Discover
                   <!-- COPY -->
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <td style="font-size: 16px; line-height: 28px; font-family: 'FiraSansRegular', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 40px 15px;">
-
-                      <!-- TODO START: email content -->
-                      <h3>Reminders for Pregnancy weeks 15-30</h3>
-                      <p>Things you’ll need to think about in this phase of your pregnancy:</p>
-                      <ul>
-                        <li>check what parental leave you can get</li>
-                        <li>check what financial help you can get</li>
-                        <li>verify your identity with RealMe</li>
-                      </ul>
-                      <!-- TODO END: email content -->
-
+                      <div id="content">{{phase.markdown_content}}</div>
                       <p>This reminder is based on the due date you have saved in your SmartStart profile.</p>
                     </td>
                   </table>
@@ -290,7 +276,7 @@ Email base from Discover
           <td style="padding: 0 15px 56px 15px;">
             <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
               <tr>
-                <td align="center" style="border-radius: 18px;" bgcolor="#3e4d5d"><a href="https://smartstart.services.govt.nz/" target="_blank" rel="noreferrer noopener" style="font-size: 16px; font-family: 'FiraSans500', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; text-decoration: none; color: #ffffff; text-decoration: none; padding: 10px 20px; display: inline-block; min-width: 250px;" class="mobile-button">smartstart.services.govt.nz</a></td>
+                  <td align="center" style="border-radius: 18px;" bgcolor="#3e4d5d"><a href="{{SITE_URL}}" target="_blank" rel="noreferrer noopener" style="font-size: 16px; font-family: 'FiraSans500', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; text-decoration: none; color: #ffffff; text-decoration: none; padding: 10px 20px; display: inline-block; min-width: 250px;" class="mobile-button">smartstart.services.govt.nz</a></td>
               </tr>
             </table>
           </td>
@@ -370,7 +356,7 @@ Email base from Discover
                         </p>
                         <p>
                           <a href="https://www.govt.nz/" target="_blank" rel="noreferrer noopener" style="color: #ffffff;">
-                          <img src="assets/img/nz-govt-logo.png" width="174" height="20" alt="New Zealand Government" /></a><!-- TODO: update img path -->
+                          <img src="{{SITE_URL}}/assets/img/nz-govt-logo.svg" width="174" height="20" alt="New Zealand Government" /></a>
                         </p>
                       </td>
                     </tr>

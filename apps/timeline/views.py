@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.serializers import HyperlinkedModelSerializer
@@ -19,5 +21,5 @@ class PhaseMetadataViewSet(ReadOnlyModelViewSet):
 
 
 def notification_detail(request, id):
-    obj = Notification.objects.get(id=id)
-    return render(request, 'timeline/notification.html', context={'obj': obj})
+    obj = get_object_or_404(Notification, id=id)
+    return HttpResponse(obj.render_email_template())

@@ -171,9 +171,9 @@ class Notification(TimeStampedModel):
         return render_to_string(
             'timeline/notification.html',
             {
-                'obj': self,
+                'notification': self,
+                'phase': self.phase,
                 'SITE_URL': settings.SITE_URL,
-                # 'logo_img_data': get_logo_img_data(),
             }
         )
 

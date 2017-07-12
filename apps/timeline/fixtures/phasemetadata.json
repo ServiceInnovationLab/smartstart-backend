@@ -4,11 +4,11 @@
     "pk": 1,
     "fields": {
         "created_at": "2016-08-31T01:06:55.265Z",
-        "modified_at": "2017-06-12T01:59:02.925Z",
+        "modified_at": "2017-07-12T04:51:23.174Z",
         "weeks_start": 0,
         "weeks_finish": 14,
-        "subject": "Pregnancy weeks 0 to 14",
-        "content": "Pregnancy weeks 0-14\r\n\r\nThe things you'll need to think about in this phase of your pregnancy are:\r\n- choose a lead maternity carer",
+        "subject": "SmartStart reminders: Pregnancy weeks 0 to 14",
+        "content": "## Reminders for Pregnancy weeks 0-14\r\n\r\nThings you'll need to think about in this phase of your pregnancy:\r\n- choose a lead maternity carer",
         "button_text": "",
         "button_link": ""
     }
@@ -18,11 +18,11 @@
     "pk": 2,
     "fields": {
         "created_at": "2016-08-31T01:07:01.760Z",
-        "modified_at": "2017-06-12T01:59:41.518Z",
+        "modified_at": "2017-07-12T04:51:42.539Z",
         "weeks_start": 15,
         "weeks_finish": 30,
-        "subject": "Pregnancy weeks 15 to 30",
-        "content": "Pregnancy weeks 15-30\r\n\r\nThe things you'll need to think about in this phase of your pregnancy are:\r\n- check what parental leave you can get \r\n- check what financial help you can get\r\n- verify your identity with RealMe",
+        "subject": "SmartStart reminders: Pregnancy weeks 15 to 30",
+        "content": "## Reminders for Pregnancy weeks 15-30\r\n\r\nThings you'll need to think about in this phase of your pregnancy:\r\n- check what parental leave you can get \r\n- check what financial help you can get\r\n- verify your identity with RealMe",
         "button_text": "",
         "button_link": ""
     }
@@ -32,11 +32,11 @@
     "pk": 3,
     "fields": {
         "created_at": "2016-08-31T01:07:09.560Z",
-        "modified_at": "2017-06-12T02:00:06.974Z",
+        "modified_at": "2017-07-12T04:52:06.359Z",
         "weeks_start": 31,
         "weeks_finish": 39,
-        "subject": "Pregnancy weeks 31 to birth",
-        "content": "Pregnancy weeks 31 to birth\r\n\r\nThe things you'll need to think about in this phase of your pregnancy are:\r\n- get a car seat ready\r\n- choose a Well Child Tamariki Ora provider",
+        "subject": "SmartStart reminders: Pregnancy weeks 31 to birth",
+        "content": "## Reminders for Pregnancy weeks 31 to birth\r\n\r\nThings you'll need to think about in this phase of your pregnancy:\r\n- get a car seat ready\r\n- choose a Well Child Tamariki Ora provider",
         "button_text": "",
         "button_link": ""
     }
@@ -46,11 +46,11 @@
     "pk": 4,
     "fields": {
         "created_at": "2016-08-31T01:06:55.265Z",
-        "modified_at": "2017-06-12T02:00:34.232Z",
+        "modified_at": "2017-07-12T04:52:31.119Z",
         "weeks_start": 40,
         "weeks_finish": 45,
-        "subject": "New baby weeks 1 to 6",
-        "content": "Your new baby weeks 1 to 6\r\n\r\nThe things you'll need to think about at this stage in your baby's life are:\r\n- register the birth\r\n- apply for an IRD number for your child\r\n- add your child to your Working for Families application\r\n- If you're on a benefit, tell Ministry of Social Development your child has been born\r\n- order a birth certificate",
+        "subject": "SmartStart reminders: New baby weeks 1 to 6",
+        "content": "## Reminders for Your new baby weeks 1 to 6\r\n\r\nThings you'll need to think about at this stage in your baby's life:\r\n- register the birth\r\n- apply for an IRD number for your child\r\n- add your child to your Working for Families application\r\n- If you're on a benefit, tell Ministry of Social Development your child has been born\r\n- order a birth certificate",
         "button_text": "",
         "button_link": ""
     }
@@ -60,11 +60,11 @@
     "pk": 5,
     "fields": {
         "created_at": "2016-08-31T01:07:01.760Z",
-        "modified_at": "2017-06-12T02:13:45.273Z",
+        "modified_at": "2017-07-12T04:52:53.250Z",
         "weeks_start": 46,
         "weeks_finish": 52,
-        "subject": "Baby 6 weeks to 3 months",
-        "content": "Your new baby 6 weeks to 3 months\r\n\r\nThings you'll need to think about at this stage in your baby's life are:\r\n- check if the financial help you can get has changed",
+        "subject": "SmartStart reminders: Baby 6 weeks to 3 months",
+        "content": "## Reminders for Your new baby 6 weeks to 3 months\r\n\r\nThings you'll need to think about at this stage in your baby's life are:\r\n- check if the financial help you can get has changed",
         "button_text": "",
         "button_link": ""
     }
@@ -74,11 +74,11 @@
     "pk": 6,
     "fields": {
         "created_at": "2016-08-31T01:07:09.560Z",
-        "modified_at": "2017-06-12T02:14:06.225Z",
+        "modified_at": "2017-07-12T04:53:28.434Z",
         "weeks_start": 53,
         "weeks_finish": 65,
-        "subject": "Baby 3 months to 6 months",
-        "content": "Your new baby 3 months to 6 months\r\n\r\nThings you'll need to think about at this stage in your baby's life:\r\n- if you get Working for Families payments, let Inland Revenue know if your income changes \r\n- check if you can get help paying for childcare",
+        "subject": "SmartStart reminders: Baby 3 months to 6 months",
+        "content": "## Reminders for Your new baby 3 months to 6 months\r\n\r\nThings you'll need to think about at this stage in your baby's life:\r\n- if you get Working for Families payments, let Inland Revenue know if your income changes \r\n- check if you can get help paying for childcare",
         "button_text": "",
         "button_link": ""
     }

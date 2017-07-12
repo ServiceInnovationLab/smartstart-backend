@@ -1,16 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+<title>{{phase.subject}}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<style type="text/css">
+  /* CLIENT-SPECIFIC STYLES */
+  body, table, td, a{-webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;} /* Prevent WebKit and Windows mobile changing default text sizes */
+  table, td{mso-table-lspace: 0pt; mso-table-rspace: 0pt;} /* Remove spacing between tables in Outlook 2007 and up */
+  img{-ms-interpolation-mode: bicubic;} /* Allow smoother rendering of resized image in Internet Explorer */
+
+  /* RESET STYLES */
+  img{border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none;}
+  table{border-collapse: collapse !important;}
+  body{height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important;}
+
+  /* iOS BLUE LINKS */
+  a[x-apple-data-detectors] {
+    color: inherit !important;
+    text-decoration: none !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+  }
+
+  h2,
+  h3,
+  h4 {
+    font-family: 'FiraSans500', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 26px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  ul {
+    padding-left: 15px;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+
+  /* MOBILE STYLES */
+  @media screen and (max-width: 525px) {
+
+    /* FULL-WIDTH TABLES */
+    .responsive-table {
+      width: 100% !important;
+    }
+
+    /* UTILITY CLASSES FOR ADJUSTING PADDING ON MOBILE */
+    .padding {
+      padding: 10px 5% 15px 5% !important;
+    }
+
+    /* ADJUST BUTTONS ON MOBILE */
+    .mobile-button-container {
+      margin: 0 auto;
+      width: 100% !important;
+    }
+
+    .mobile-button {
+      border: 0 !important;
+      font-size: 16px !important;
+      display: block !important;
+    }
+  }
+
+  @font-face {
+    font-family: 'FiraSansRegular';
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-regular.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'FiraSans500';
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-500.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-500.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'FiraSans700';
+    src:url('{{SITE_URL}}/assets/fonts/fira-sans-700.woff2') format('woff2'),
+        url('{{SITE_URL}}/assets/fonts/fira-sans-700.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* ANDROID CENTER FIX */
+  div[style*="margin: 16px 0;"] { margin: 0 !important; }
+</style>
 </head>
-<body>
+<body style="margin: 0 !important; padding: 0 !important;">
 
-<h2>{{obj.phase.subject}}</h2>
+<!-- HIDDEN PREHEADER TEXT -->
+<div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+  A message from SmartStart
+</div>
 
-<p>{{obj.phase.markdown_content}}</p>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
-<a href="{{obj.user.unsubscribe_url}}">Unsubscribe</a>
+  <!-- HEADER -->
+  <tr>
+    <td align="center" bgcolor="#e0f8ff">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="color: #4f4b46; padding: 35px 15px 170px 15px; position: relative">
+                        <a href="" target="_blank" rel="noreferrer noopener" style="color: #4f4b46;">
+                          <img src="{{SITE_URL}}/assets/img/smartstart-logo-print.svg" width="174" height="40" alt="SmartStart" />
+                        </a>
+                        <img src="{{SITE_URL}}/assets/img/illustrations/header-illustration.png" width="312" height="195" alt="" style="position: absolute; bottom: -44px; left: 50%; margin-left: -156px;"/>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
 
+  <!-- WELCOME TEXT -->
+  <tr>
+    <td align="center" bgcolor="#d9ed96">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="font-size: 32px; line-height: 40px; font-family: 'FiraSans700', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 60px 15px 5px 15px;">
+                        Kia ora!
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 22px; line-height: 28px; font-family: 'FiraSans500', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 5px 15px 50px 15px;">
+                        Welcome to reminders from the SmartStart To Do list.
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+  <!-- MAIN CONTENT -->
+  <tr>
+    <td align="center" bgcolor="#ffffff">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <td style="font-size: 16px; line-height: 28px; font-family: 'FiraSansRegular', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 40px 15px;">
+                      <div id="content">{{phase.markdown_content}}</div>
+                      <p>This reminder is based on the due date you have saved in your SmartStart profile.</p>
+                    </td>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+  <!-- FIND OUT HOW AT SMARTSTART -->
+  <tr>
+    <td align="center" bgcolor="#ffffff">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="padding: 0 15px;">
+                        <span style="display: block; height: 1px; background-color: #4f4b46;"></span> <!-- top border -->
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 16px; line-height: 28px; font-family: 'FiraSansRegular', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 40px 15px 15px;">
+                        <h3>Find out how at SmartStart</h3>
+                        <p>SmartStart provides step-by-step information and support to help you access the right services service you and your baby.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+  <!-- BUTTON -->
+  <tr>
+    <td align="center" bgcolor="#ffffff">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td style="padding: 0 15px 56px 15px;">
+            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
+              <tr>
+                  <td align="center" style="border-radius: 18px;" bgcolor="#3e4d5d"><a href="{{SITE_URL}}" target="_blank" rel="noreferrer noopener" style="font-size: 16px; font-family: 'FiraSans500', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; text-decoration: none; color: #ffffff; text-decoration: none; padding: 10px 20px; display: inline-block; min-width: 250px;" class="mobile-button">smartstart.services.govt.nz</a></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+  <!-- FEEDBACK -->
+  <tr>
+    <td align="center" bgcolor="#ffffff">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="padding: 0 15px;">
+                        <span style="display: block; height: 1px; background-color: #4f4b46;"></span> <!-- top border -->
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 16px; line-height: 28px; font-family: 'FiraSansRegular', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #4f4b46; padding: 40px 15px;">
+                        <h3>Let us know your feedback</h3>
+                        <p>We’d like to know if you found this information useful and what else you’d like to find out about.</p>
+                        <p>Email us: <a href="mailto:smartstart@dia.govt.nz" style="color: #326599;">smartstart@dia.govt.nz</a></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+    <td align="center" bgcolor="#3e4d5d">
+      <!--[if (gte mso 9)|(IE)]>
+      <table border="0" cellspacing="0" cellpadding="0" width="670">
+      <tr>
+      <td valign="top" width="670">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 670px;" class="responsive-table">
+        <tr>
+          <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td>
+                  <!-- COPY -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="font-size: 14px; line-height: 26px; text-align: center; font-family: 'FiraSansRegular', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #ffffff; padding: 50px 15px;">
+                        <p>
+                        <a href="{{notification.user.unsubscribe_url}}" target="_blank" rel="noreferrer noopener" style="color: #c5c9ce; display: inline-block; margin-bottom: 15px;">Unsubscribe from SmartStart To Do list reminders</a>
+                        </p>
+                        <p>
+                          <a href="https://www.govt.nz/" target="_blank" rel="noreferrer noopener" style="color: #ffffff;">
+                          <img src="{{SITE_URL}}/assets/img/nz-govt-logo.svg" width="174" height="20" alt="New Zealand Government" /></a>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+
+</table>
 </body>
 </html>

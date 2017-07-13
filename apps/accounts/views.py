@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import login as auth_login
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
@@ -13,6 +14,34 @@ from . import models as m
 
 import logging
 log = logging.getLogger(__name__)
+
+SESSION_API_NAMESPACE = 'bro'
+
+
+class SessionViewSet(viewsets.ViewSet):
+
+    # just a placeholder to remove error
+    queryset = Session.objects.none()
+
+    http_method_names = ['get', 'put']
+    permission_classes = [permissions.AllowAny]
+
+    def list(self, request):
+        # we don't list anything
+        data = request.session.get(SESSION_API_NAMESPACE, {})
+        return response.Response(data)
+
+    def retrieve(self, request, pk=None):
+        session = request.session.get(SESSION_API_NAMESPACE, {})
+        data = session.get(pk, {})
+        return response.Response(data)
+
+    def update(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        session = request.session.get(SESSION_API_NAMESPACE, {})
+        session[pk] = request.data
+        request.session[SESSION_API_NAMESPACE] = session
+        return response.Response(request.data)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

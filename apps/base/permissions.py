@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class ReadOnly(permissions.BasePermission):
     """
     ReadOnly to all

@@ -1,14 +1,13 @@
 from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.views import login as auth_login
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
 from apps.realme.views import login as realme_login
 from apps.accounts.models import UserProxy
+from apps.accounts.authentication import AnonymousSessionAuthentication
 from utils import set_exchange_cookie
 from . import models as m
 
@@ -25,6 +24,7 @@ class SessionViewSet(viewsets.ViewSet):
 
     http_method_names = ['get', 'put']
     permission_classes = [permissions.AllowAny]
+    authentication_classes = [AnonymousSessionAuthentication]
 
     def list(self, request):
         # we don't list anything

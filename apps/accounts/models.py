@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, date
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
@@ -13,7 +13,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class UserProxyManager(models.Manager):
+class UserProxyManager(UserManager):
 
     def subscribers(self):
         """

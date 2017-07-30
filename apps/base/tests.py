@@ -10,7 +10,11 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         self.admin = UserProxy.objects.get(username='admin')
+        self.admin.email = 'lef-dev+admin@catalyst.net.nz'
+        self.admin.save()
         self.test = UserProxy.objects.get(username='test')
+        self.test.email = 'lef-dev+test@catalyst.net.nz'
+        self.test.save()
 
         self.api_preferences = '/api/preferences/'
         self.api_users = '/api/users/'

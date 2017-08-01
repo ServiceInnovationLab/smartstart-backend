@@ -54,7 +54,7 @@ class SiteLocker:
 
         For dev and test instances, both value are None, should still equal.
         """
-        return Config.objects.get_value('site_bash') == self.site_hash
+        return Config.objects.get_value('site_hash') == self.site_hash
 
     def make_live(self):
         """
@@ -63,7 +63,7 @@ class SiteLocker:
         database so that any instance of Django (in a cluster, or a blue/green
         scenario, etc.) can determine which instance is "live".
         """
-        Config.objects.set_value('site_bash', self.site_hash)
+        Config.objects.set_value('site_hash', self.site_hash)
 
     def lock(self, name):
         """

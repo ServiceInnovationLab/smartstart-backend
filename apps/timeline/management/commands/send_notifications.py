@@ -17,13 +17,11 @@ class Command(BaseCommand):
         # make sure only the live instance is sending emails.
         locker = SiteLocker()
         if not locker.is_live():
-            log.info('Aborting, this instance is not live.')
             sys.exit(0)
 
         lock = 'begin_sending_notifications_at'
 
         if locker.is_locked(lock):
-            log.info('Aborting, another sending task is running')
             sys.exit(0)
 
         try:

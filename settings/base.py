@@ -99,8 +99,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.SessionAuthentication',
-        'apps.accounts.authentication.FixedSessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 

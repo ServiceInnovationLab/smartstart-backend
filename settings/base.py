@@ -59,6 +59,9 @@ INSTALLED_APPS = [
      'django_otp.plugins.otp_static',
      # 'django_otp.plugins.otp_email',
      'two_factor',
+
+     # sentry integration
+     'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE_CLASSES = [

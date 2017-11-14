@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import uuid
 from datetime import datetime
 from django.conf import settings
@@ -70,6 +71,7 @@ class BroFormManager(models.Manager):
         (n, _) = self.get_queryset().filter(
             modified_at__lt=datetime.now() - settings.STALE_BROFORM_PERIOD).delete()
         return n
+
 
 class BroForm(TimeStampedModel):
     """

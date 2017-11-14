@@ -55,15 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-     'django_otp',
-     'django_otp.plugins.otp_totp',
-     # 'django_otp.plugins.otp_hotp',
-     'django_otp.plugins.otp_static',
-     # 'django_otp.plugins.otp_email',
-     'two_factor',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    # 'django_otp.plugins.otp_hotp',
+    'django_otp.plugins.otp_static',
+    # 'django_otp.plugins.otp_email',
+    'two_factor',
 
-     # sentry integration
-     'raven.contrib.django.raven_compat',
+    # sentry integration
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -85,7 +85,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR/'templates',
+            BASE_DIR / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -135,7 +135,7 @@ RETURN_PATH_EMAIL = 'return-path-email'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  '/tmp/{}.db'.format(PROJ_NAME)
+        'NAME': '/tmp/{}.db'.format(PROJ_NAME)
     }
 }
 
@@ -150,7 +150,7 @@ EXCHANGE_COOKIE_NAME = 'is_authenticated'
 # Delete BRO data if unmodified for 12 months, RM#44127
 STALE_BROFORM_PERIOD = timedelta(days=365)
 
-############# BEGIN OVERRIDE #############
+# ############ BEGIN OVERRIDE #############
 # settings may need to override in local.py
 # principle: use production as default if possible
 DEBUG = False
@@ -161,7 +161,7 @@ SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
 
-############# END OVERRIDE #############
+# ############ END OVERRIDE #############
 
 try:
     from .local import *  # noqa

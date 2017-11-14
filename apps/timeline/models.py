@@ -2,10 +2,9 @@ from datetime import date, timedelta
 
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail import get_connection
 
 from mistune import markdown
 from apps.base.models import TimeStampedModel, Choice
@@ -30,7 +29,7 @@ class PregnancyHelper:
     def get_weekno(self, ref_date=None):
         """Get weekno at ref_date or today as integer"""
         today = ref_date or date.today()
-        return int((today - self.pregnancy_date).days/7)
+        return int((today - self.pregnancy_date).days / 7)
 
     def get_week_start_date(self, weekno):
         return self.pregnancy_date + timedelta(weeks=weekno)

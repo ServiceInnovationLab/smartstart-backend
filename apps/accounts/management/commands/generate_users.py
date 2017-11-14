@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from apps.accounts.models import UserProxy
 from apps.timeline import models as m
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         name = options.get('name') or 'lef-dev'
         today = date.today()
         for weekno in range(-2, 73):
-            due_date = today + timedelta(weeks=m.PREGNANCY_TOTAL_WEEKS-weekno)
+            due_date = today + timedelta(weeks=m.PREGNANCY_TOTAL_WEEKS - weekno)
             username = 'week{}'.format(weekno)
             email = '{}+{}@catalyst.net.nz'.format(name, username)
             user, created = UserProxy.objects.update_or_create(username=username, defaults={'email': email})

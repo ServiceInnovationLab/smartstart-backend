@@ -2,6 +2,7 @@ import os
 from functools import wraps
 from django.shortcuts import render_to_response
 
+
 def render_to(template_name=None, content_type=None, status=None, using=None):
     """
     A modified version for django-annoying render_to.

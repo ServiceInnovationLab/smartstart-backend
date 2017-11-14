@@ -15,4 +15,3 @@ class Command(BaseCommand):
         b = Bundle(site_url=options.get('site_url'))
         r = b.send_opaque_token_request(user)
         self.stdout.write(r.content.decode('utf-8'))
-

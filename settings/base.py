@@ -1,5 +1,7 @@
 from os.path import dirname, abspath
 from path import Path
+from datetime import timedelta
+
 
 BASE_DIR = Path(dirname(dirname(abspath(__file__))))
 PROJ_NAME = 'smartstart'
@@ -145,6 +147,8 @@ FORCE_2FA = True
 # cookie to exchange info between backend and frontend
 EXCHANGE_COOKIE_NAME = 'is_authenticated'
 
+# Delete BRO data if unmodified for 12 months, RM#44127
+STALE_BROFORM_PERIOD = timedelta(days=365)
 
 ############# BEGIN OVERRIDE #############
 # settings may need to override in local.py

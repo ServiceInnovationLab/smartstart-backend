@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User, UserManager
@@ -54,11 +55,28 @@ class UserProxyManager(UserManager):
                 continue
 
 
+class BroFormManager(models.Manager):
+    """
+    Django Manager for the :class:`BroForm` model.
+    """
+
+    def expire_old_data(self):
+        """
+        Use the ``STALE_BROFORM_PERIOD`` setting to control how long BRO form
+        data should stick around in the database.
+
+        :returns: the number of records deleted.
+        """
+        (n, _) = self.get_queryset().filter(
+            modified_at__lt=datetime.now() - settings.STALE_BROFORM_PERIOD).delete()
+        return n
+
 class BroForm(TimeStampedModel):
     """
     Holds arbitrary JSON blobs of form data in order to support the partial form
     save requirement for authenticated users.
     """
+    objects = BroFormManager()
 
     user = AutoOneToOneField(User, unique=True)
     form_data = models.TextField(blank=True, default='')

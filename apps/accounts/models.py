@@ -1,9 +1,9 @@
 import uuid
-from datetime import datetime, date
+from datetime import datetime
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User, UserManager
-from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
+from django.core.signing import TimestampSigner
 from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
 from apps.base.utils import get_full_url
@@ -54,6 +54,19 @@ class UserProxyManager(UserManager):
                 continue
 
 
+class BroForm(TimeStampedModel):
+    """
+    Holds arbitrary JSON blobs of form data in order to support the partial form
+    save requirement for authenticated users.
+    """
+
+    user = AutoOneToOneField(User, unique=True)
+    form_data = models.TextField(blank=True, default='')
+
+    def __str__(self):
+        return 'BRO form data for {}'.format(self.user)
+
+
 class Profile(TimeStampedModel):
     """Not used any more"""
     user = AutoOneToOneField(User)
@@ -79,7 +92,7 @@ class UserProxy(User):
         Preference.objects.update_or_create(user=self, key=key, defaults={'val': val})
 
     def get_preference(self, key, default=None):
-        pref =  Preference.objects.filter(user=self, key=key).first()
+        pref = Preference.objects.filter(user=self, key=key).first()
         return pref.val if pref else default
 
     def set_due_date(self, due_date):

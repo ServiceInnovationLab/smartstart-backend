@@ -7,11 +7,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
 from django import http
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.response import OneLogin_Saml2_Response
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.xml_utils import OneLogin_Saml2_XML
+
 from apps.base.decorators import render_to
 from .bundles import Bundle
 from utils import log_me
@@ -51,9 +53,11 @@ def init_saml2_auth(request):
 
 
 def login(request):
+    # The URL to return to after successful authentication.
+    target_url = request.GET.get(REDIRECT_FIELD_NAME, '/')
     auth = init_saml2_auth(request)
-    url = auth.login()
-    log.info('sp login url: {}'.format(url))
+    url = auth.login(return_to=target_url)
+    log.debug('sp login url: {}'.format(url))
     return redirect(url)
 
 
@@ -105,7 +109,8 @@ def assertion_consumer_service(request):
     if request.method != 'POST':
         return http.HttpResponseBadRequest()
 
-    response = http.HttpResponseRedirect('/')
+    target_url = request.POST.get('RelayState', '/')
+    response = http.HttpResponseRedirect(target_url)
 
     auth = init_saml2_auth(request)
     saml2_response = OneLogin_Saml2_Response(

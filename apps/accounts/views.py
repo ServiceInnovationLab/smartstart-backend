@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.dispatch import receiver
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.views import login as auth_login
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
+from django.contrib.auth.signals import user_logged_in
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
 from apps.realme.views import login as realme_login
@@ -97,10 +99,26 @@ class BroFormViewSet(viewsets.ViewSet):
         # Save BRO to the database if authenticated.
         if request.user.is_authenticated():
             (bro, _) = BroForm.objects.get_or_create(user=request.user)
-            bro.form_data = json.dumps(request.data)
+            bro.form_data = json.dumps(request.data or {})
             bro.save()
         request.session[BRO_FORM_SESSION_KEY] = request.data
         return response.Response(request.data)
+
+
+@receiver(user_logged_in)
+def bro_save_from_session(sender, user, request, **kwargs):
+    """
+    Signal function when logging in, to save any anonymous form data from the
+    session to the database against the user.
+    If form data already exists for the authenticated user, it takes precedence
+    over anonymous session data and is loaded into the session instead.
+    """
+    (bro, created) = BroForm.objects.get_or_create(user=user)
+    if created or not bro.form_data or bro.form_data == '{}':
+        bro.form_data = json.dumps(request.session.get(BRO_FORM_SESSION_KEY, {}))
+        bro.save()
+    else:
+        request.session[BRO_FORM_SESSION_KEY] = json.loads(bro.form_data or '{}')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

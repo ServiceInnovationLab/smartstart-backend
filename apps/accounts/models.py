@@ -1,9 +1,10 @@
 import uuid
-from datetime import datetime, date
+from datetime import datetime
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User, UserManager
-from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
+from django.core.signing import TimestampSigner
 from annoying.fields import AutoOneToOneField
 from apps.base.models import TimeStampedModel
 from apps.base.utils import get_full_url
@@ -54,6 +55,36 @@ class UserProxyManager(UserManager):
                 continue
 
 
+class BroFormManager(models.Manager):
+    """
+    Django Manager for the :class:`BroForm` model.
+    """
+
+    def expire_old_data(self):
+        """
+        Use the ``STALE_BROFORM_PERIOD`` setting to control how long BRO form
+        data should stick around in the database.
+
+        :returns: the number of records deleted.
+        """
+        (n, _) = self.get_queryset().filter(
+            modified_at__lt=datetime.now() - settings.STALE_BROFORM_PERIOD).delete()
+        return n
+
+class BroForm(TimeStampedModel):
+    """
+    Holds arbitrary JSON blobs of form data in order to support the partial form
+    save requirement for authenticated users.
+    """
+    objects = BroFormManager()
+
+    user = AutoOneToOneField(User, unique=True)
+    form_data = models.TextField(blank=True, default='')
+
+    def __str__(self):
+        return 'BRO form data for {}'.format(self.user)
+
+
 class Profile(TimeStampedModel):
     """Not used any more"""
     user = AutoOneToOneField(User)
@@ -79,7 +110,7 @@ class UserProxy(User):
         Preference.objects.update_or_create(user=self, key=key, defaults={'val': val})
 
     def get_preference(self, key, default=None):
-        pref =  Preference.objects.filter(user=self, key=key).first()
+        pref = Preference.objects.filter(user=self, key=key).first()
         return pref.val if pref else default
 
     def set_due_date(self, due_date):

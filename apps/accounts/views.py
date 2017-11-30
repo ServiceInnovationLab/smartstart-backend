@@ -1,20 +1,24 @@
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.dispatch import receiver
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.views import login as auth_login
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
+from django.contrib.auth.signals import user_logged_in
 from rest_framework import viewsets, response, decorators, serializers, permissions, status
 
 from apps.realme.views import login as realme_login
-from apps.accounts.models import UserProxy
+from apps.accounts.models import UserProxy, BroForm
 from apps.accounts.authentication import AnonymousSessionAuthentication
 from utils import set_exchange_cookie
 from . import models as m
 
+import json
 import logging
 log = logging.getLogger(__name__)
 
 SESSION_API_NAMESPACE = 'bro'
+BRO_FORM_SESSION_KEY = 'bro-form'
 
 
 class SessionViewSet(viewsets.ViewSet):
@@ -41,7 +45,80 @@ class SessionViewSet(viewsets.ViewSet):
         session = request.session.get(SESSION_API_NAMESPACE, {})
         session[pk] = request.data
         request.session[SESSION_API_NAMESPACE] = session
+
         return response.Response(request.data)
+
+
+class BroFormViewSet(viewsets.ViewSet):
+    """
+    This ViewSet handles saving the BRO (Birth Registration Online) form data,
+    both for anonymous users by storing it in the Django session, and for
+    authenticated users by storing it in the database. Form data is saved as
+    arbitrary JSON, and we bend the usage of ViewSets a bit by using a constant
+    pk of 'data' for the item level retrieve and update end points. The list end
+    point returns nothing. The end points are:
+
+    - ``/api/bro-form/``: GET list, returns empty JSON.
+    - ``/api/bro-form/data/``: GET and PUT here to fetch and save BRO form data.
+    """
+    queryset = m.BroForm.objects.none()
+    http_method_names = ['get', 'put']
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [AnonymousSessionAuthentication]
+
+    def list(self, request):
+        """
+        Dummy list end point, returns empty JSON.
+        """
+        return response.Response({})
+
+    def retrieve(self, request, pk=None):
+        """
+        Fetch BRO form data for the current session. This data comes from the
+        session if the user is anonymous, and the database if authenticated.
+        Ignore pk, it should always have a dummy value of 'data' since we're
+        using a session key or the user id for separation of data concerns.
+        Make a GET request to the ``/api/bro-form/data/`` end point.
+        """
+        if request.user.is_authenticated():
+            bro = m.BroForm.objects.filter(user=request.user).first()
+            data = json.loads(bro.form_data or '{}') if bro else {}
+        else:
+            data = request.session.get(BRO_FORM_SESSION_KEY, {})
+        return response.Response(data)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Save BRO form data for the current session. This data saves to the
+        session if the user is anonymous, and the database if authenticated.
+        Ignore pk, it should always have a dummy value of 'data' since we're
+        using a session key or the user id for separation of data concerns.
+        Make a PUT request to the ``/api/bro-form/data/`` end point, with the
+        form data in the request body as JSON.
+        """
+        # Save BRO to the database if authenticated.
+        if request.user.is_authenticated():
+            (bro, _) = BroForm.objects.get_or_create(user=request.user)
+            bro.form_data = json.dumps(request.data or {})
+            bro.save()
+        request.session[BRO_FORM_SESSION_KEY] = request.data
+        return response.Response(request.data)
+
+
+@receiver(user_logged_in)
+def bro_save_from_session(sender, user, request, **kwargs):
+    """
+    Signal function when logging in, to save any anonymous form data from the
+    session to the database against the user.
+    If form data already exists for the authenticated user, it takes precedence
+    over anonymous session data and is loaded into the session instead.
+    """
+    (bro, created) = BroForm.objects.get_or_create(user=user)
+    if created or not bro.form_data or bro.form_data == '{}':
+        bro.form_data = json.dumps(request.session.get(BRO_FORM_SESSION_KEY, {}))
+        bro.save()
+    else:
+        request.session[BRO_FORM_SESSION_KEY] = json.loads(bro.form_data or '{}')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -168,7 +245,7 @@ class EmailAddressSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'email', 'created_at')
 
     def create(self, validated_data):
-        obj, created  = self.Meta.model.objects.get_or_create(**validated_data)
+        obj, created = self.Meta.model.objects.get_or_create(**validated_data)
         if obj.has_email_changed:  # TODO: check created? not sure.
             obj.send_confirm_email()
         return obj
@@ -211,7 +288,7 @@ def unsubscribe(request, token):
         message = 'unsubscribe_token_expired'
     except BadSignature:
         message = 'unsubscribe_token_invalid'
-    except Exception as e:
+    except Exception:
         message = 'unsubscribe_token_unknown_error'
 
     if message:

@@ -32,6 +32,7 @@ router.register(r'preferences', accounts_views.PreferenceViewSet)
 router.register(r'emailaddresses', accounts_views.EmailAddressViewSet)
 router.register(r'phase-metadata', timeline_views.PhaseMetadataViewSet)
 router.register(r'sessions', accounts_views.SessionViewSet)
+router.register(r'bro-form', accounts_views.BroFormViewSet)
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(pattern_name='api-root')),

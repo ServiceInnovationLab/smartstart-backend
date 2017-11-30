@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIRECTORY=$(dirname $0)/../src
+DIRECTORY=$(dirname $0)/..
 
 find ${DIRECTORY} -iname '*.py' \
     | grep -v migration \

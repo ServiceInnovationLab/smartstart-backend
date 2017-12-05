@@ -19,3 +19,5 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# REQUEST_CACHE_TTL = timedelta(minutes=10)

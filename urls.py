@@ -22,6 +22,7 @@ from apps.base import views as base_views
 from apps.accounts import views as accounts_views
 from apps.timeline import views as timeline_views
 
+
 admin.site.site_title = 'SmartStart'
 admin.site.site_header = 'SmartStart'
 
@@ -40,6 +41,7 @@ urlpatterns = [
     url(r'^realme/', include('apps.realme.urls', namespace='realme')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
+    url(r'^api/request/', include('apps.request_cache.urls', namespace='request_cache')),
     url(r'^accounts/', include('apps.accounts.urls', namespace='accounts')),
     url(r'^timeline/', include('apps.timeline.urls', namespace='timeline')),
     url(r'', include('two_factor.urls', namespace='two_factor')),

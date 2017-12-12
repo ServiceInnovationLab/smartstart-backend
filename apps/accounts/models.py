@@ -125,7 +125,7 @@ class UserProxy(User):
         if due_date_str:
             try:
                 return datetime.strptime(due_date_str, '%Y-%m-%d').date()
-            except:
+            except Exception:
                 pass
         return None
 

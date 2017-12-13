@@ -23,7 +23,7 @@ def build_email_message(subject, text_message, recipient_list, html_message=None
         body=text_message,
         from_email=settings.RETURN_PATH_EMAIL,  # NOTE: this is unusual
         to=recipient_list,
-        headers={'From': settings.DEFAULT_FROM_EMAIL}, # NOTE: this is unusual
+        headers={'From': settings.DEFAULT_FROM_EMAIL},  # NOTE: this is unusual
         reply_to=[settings.REPLY_TO_EMAIL])
     if html_message:
         mail.attach_alternative(html_message, 'text/html')

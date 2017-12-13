@@ -15,4 +15,3 @@ class Command(BaseCommand):
         user = User.objects.get(id=user_id)
         text = b.render_opaque_token_request(user)
         self.stdout.write(text)
-

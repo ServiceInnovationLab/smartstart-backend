@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from os.path import dirname, abspath
 from path import Path
 from datetime import timedelta
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.realme',
     'apps.timeline',
+    'apps.request_cache',
 
     # 3rd party apps
     'django_extensions',
@@ -160,6 +162,13 @@ SITE_DOMAIN = 'smartstart.services.govt.nz'
 SITE_URL = 'https://{}'.format(SITE_DOMAIN)
 
 BUNDLE_NAME = 'PRD'  # MTS, ITE-uat, ITE-testing, PRD
+
+# Default settings for apps/request_cache
+REQUEST_CACHE_TTL = timedelta(hours=24)
+CKAN_QUERY_URL = 'https://catalogue.data.govt.nz/api/action/datastore_search_sql'
+LBS_DATASET = '"35de6bf8-b254-4025-89f5-da9eb6adf9a0"'  # Must have "double quotes" around it.
+TIMELINE_URL = 'https://www.govt.nz/BoacAPI/v1/all'
+TIMELINE_USER_AGENT = 'SmartStart/Nzk3MjYzNzVkM2Yw'
 
 # ############ END OVERRIDE #############
 

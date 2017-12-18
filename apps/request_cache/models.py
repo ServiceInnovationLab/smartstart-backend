@@ -2,10 +2,10 @@
 import requests
 import logging
 
-from datetime import datetime
 from django.conf import settings
 from django.contrib.postgres import fields as pgfields
 from django.db import models
+from django.utils import timezone
 from apps.base.models import TimeStampedModel
 from apps.request_cache import ckan
 
@@ -41,18 +41,26 @@ class RequestCache(TimeStampedModel):
             log.debug('Got error "{}" from remote URL {}'.format(e, r.request.url))
             return False
 
-        if response['success']:
+        if r.status_code == 200:
             self.result = response
             self.save()
             return True
-        else:
-            log.debug('Error from query "{}": {}'.format(self.name, response['error']))
+
+        # Update TTL if we get a cache not modified response.
+        if r.status_code == 304:
+            self.modified_at = timezone.now()
+            self.save()
+            return True
+
+        status_class = r.status_code // 100
+        if status_class in (4, 5) or ('success' in response and not response['success']):
+            log.debug('Error from query "{}": {}'.format(self.name, response['error'] if 'error' in response else 'HTTP {}'.format(r.status_code)))
             return False
 
     def get_result(self):
         """
         This returns a result, fetching a new one if it is too old or empty.
         """
-        if self.result == {} or self.modified_at < datetime.now() - settings.REQUEST_CACHE_TTL:
+        if self.result == {} or self.modified_at < timezone.now() - settings.REQUEST_CACHE_TTL:
             self.fetch_query()
         return self.result

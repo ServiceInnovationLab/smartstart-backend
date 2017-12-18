@@ -96,7 +96,7 @@ SQL_QUERIES = {
         {orderby}
     """,
 
-    "lbs_early_ed": """
+    "lbs_early_education": """
         SELECT DISTINCT {fields}
         FROM {dataset}
         WHERE {skip_null_results} AND
@@ -107,10 +107,10 @@ SQL_QUERIES = {
         ) AND (
           "LEVEL_2_CATEGORY" LIKE '%Preschool / Early Childhood Education%'
         )
-        {orderBy}
+        {orderby}
     """,
 
-    "lbs_breast_feeding": """
+    "lbs_breastfeeding": """
         SELECT DISTINCT {fields}
         FROM {dataset}
         WHERE {skip_null_results} AND
@@ -123,7 +123,7 @@ SQL_QUERIES = {
           OR
             "LEVEL_2_CATEGORY" LIKE '%Breast Feeding Support%'
         )
-        {orderBy}
+        {orderby}
     """,
 
     "lbs_antenatal": """
@@ -143,7 +143,7 @@ SQL_QUERIES = {
           OR
             LOWER("PROVIDER_NAME") LIKE '%plunket%'
         )
-        {orderBy}
+        {orderby}
     """,
 
     "lbs_mental_health": """
@@ -205,7 +205,7 @@ SQL_QUERIES = {
           OR
             "LEVEL_2_CATEGORY" LIKE '%Anxiety Problems%'
         )
-        {orderBy}
+        {orderby}
     """,
 
     "lbs_budgeting": """
@@ -259,7 +259,7 @@ SQL_QUERIES = {
           AND
             LOWER("PROVIDER_NAME") NOT LIKE 'work and income%'
         )
-        {orderBy}
+        {orderby}
     """,
 
     "lbs_well_child": """
@@ -269,7 +269,7 @@ SQL_QUERIES = {
         (
             "LEVEL_2_CATEGORY" LIKE '%Well Child Health (Tamariki Ora)%'
         )
-        {orderBy}
+        {orderby}
     """,
 
 }

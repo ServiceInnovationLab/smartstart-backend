@@ -1,6 +1,7 @@
 from django.conf import settings
 from path import Path
 
+
 def log_me(text, print_me=True, write_me=True, name='lef', append=False):
     """
     This log is used to debug big blob of text like xml.
@@ -23,7 +24,7 @@ def set_exchange_cookie(response, value, **kwargs):
     to set the cookie value.
     """
     response.set_cookie(
-        settngs.EXCHANGE_COOKIE_NAME,
+        settings.EXCHANGE_COOKIE_NAME,
         value=value,
         **kwargs
     )

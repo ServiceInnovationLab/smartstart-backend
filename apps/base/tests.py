@@ -2,6 +2,7 @@ import json
 from django.test import TestCase, override_settings
 from apps.accounts.models import UserProxy
 
+
 class BaseTestCase(TestCase):
     fixtures = [
         'test_users',

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import uuid
 from datetime import datetime
 from django.conf import settings
@@ -71,6 +72,7 @@ class BroFormManager(models.Manager):
             modified_at__lt=datetime.now() - settings.STALE_BROFORM_PERIOD).delete()
         return n
 
+
 class BroForm(TimeStampedModel):
     """
     Holds arbitrary JSON blobs of form data in order to support the partial form
@@ -123,7 +125,7 @@ class UserProxy(User):
         if due_date_str:
             try:
                 return datetime.strptime(due_date_str, '%Y-%m-%d').date()
-            except:
+            except Exception:
                 pass
         return None
 

@@ -20,3 +20,4 @@ DATABASES = {
     }
 }
 
+# REQUEST_CACHE_TTL = timedelta(minutes=10)

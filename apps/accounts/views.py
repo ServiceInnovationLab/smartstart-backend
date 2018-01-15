@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.dispatch import receiver
@@ -263,13 +264,13 @@ class EmailAddressViewSet(viewsets.ModelViewSet):
         return m.EmailAddress.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        obj = serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user)
 
 
 def login_router(request):
-    BUNDLE_NAME = getattr(settings, 'BUNDLE_NAME', 'FAKE')
-    log.info('current BUNDLE_NAME: {}'.format(BUNDLE_NAME))
-    if BUNDLE_NAME in settings.BUNDLES:
+    bundle_name = getattr(settings, 'BUNDLE_NAME', 'FAKE')
+    log.info('current BUNDLE_NAME: {}'.format(bundle_name))
+    if bundle_name in settings.BUNDLES:
         return realme_login(request)
     else:
         return auth_login(request)

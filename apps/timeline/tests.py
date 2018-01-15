@@ -32,10 +32,10 @@ class PhaseMetadataTestCase(BaseTestCase):
         due_date = date(2016, 10, 28)
         helper = m.PregnancyHelper(due_date)
 
-        self.assertEqual(helper.get_weekno(ref_date=due_date - timedelta(days=1)), m.PREGNANCY_TOTAL_WEEKS-1)
+        self.assertEqual(helper.get_weekno(ref_date=due_date - timedelta(days=1)), m.PREGNANCY_TOTAL_WEEKS - 1)
         self.assertEqual(helper.get_weekno(ref_date=due_date), m.PREGNANCY_TOTAL_WEEKS)
         self.assertEqual(helper.get_weekno(ref_date=due_date + timedelta(days=1)), m.PREGNANCY_TOTAL_WEEKS)
-        self.assertEqual(helper.get_weekno(ref_date=due_date + timedelta(days=7)), m.PREGNANCY_TOTAL_WEEKS+1)
+        self.assertEqual(helper.get_weekno(ref_date=due_date + timedelta(days=7)), m.PREGNANCY_TOTAL_WEEKS + 1)
 
     def test_notifications(self):
         """

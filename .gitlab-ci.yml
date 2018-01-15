@@ -1,6 +1,13 @@
+before_script:
+  - virtualenv -p /usr/bin/python3 venv
+  - source venv/bin/activate
+  - pip install -U -r requirements.txt
+  - pip install flake8
+  - cp settings/ci_local.py settings/local.py
+
 unit_tests:
   script:
-    - /bin/bash bin/ci-unit-tests.sh
+    - bin/run-flake8.sh && python manage.py test
 
   when: on_success
 

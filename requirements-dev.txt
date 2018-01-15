@@ -17,3 +17,4 @@ whitenoise
 pyOpenSSL
 Markdown
 mistune
+flake8

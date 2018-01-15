@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from ...mail import ses_send_mail
 
+
 class Command(BaseCommand):
     help = 'Send ses mail to address'
 
@@ -14,4 +15,3 @@ class Command(BaseCommand):
             'Across the Great Wall we can reach every corner in the world.',
             [email],
         )
-

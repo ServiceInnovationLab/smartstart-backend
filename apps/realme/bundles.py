@@ -8,7 +8,7 @@ import requests
 from lxml import etree
 from path import Path
 from datetime import datetime, timedelta
-from onelogin.saml2.constants import OneLogin_Saml2_Constants as constants
+from onelogin.saml2.constants import OneLogin_Saml2_Constants as Saml2
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from utils import log_me
@@ -32,6 +32,7 @@ NAMESPACES = {
     'saml2': 'urn:oasis:names:tc:SAML:2.0:assertion',
     'iCMS': "urn:nzl:govt:ict:stds:authn:deployment:igovt:gls:iCMS:1_0",
 }
+
 
 def dt_fmt(dt):
     return dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
@@ -159,19 +160,19 @@ class Bundle(object):
                 "wantNameId": True,
                 "wantNameIdEncrypted": False,
                 "wantAssertionsEncrypted": False,
-                "signatureAlgorithm": constants.RSA_SHA1,
+                "signatureAlgorithm": Saml2.RSA_SHA1,
             },
             "sp": {
                 "entityId": self.sp_entity_id,
                 "assertionConsumerService": {
                     "url": self.sp_acs_url,
-                    "binding": constants.BINDING_HTTP_POST,
+                    "binding": Saml2.BINDING_HTTP_POST,
                 },
                 # "singleLogoutService": {
                 #     "url": "",
-                #     "binding": constants.BINDING_HTTP_REDIRECT,
+                #     "binding": Saml2.BINDING_HTTP_REDIRECT,
                 # },
-                "NameIDFormat": constants.NAMEID_UNSPECIFIED,
+                "NameIDFormat": Saml2.NAMEID_UNSPECIFIED,
                 "x509cert": self.sp_cer_body,
                 "privateKey": self.sp_key_body,
             },
@@ -179,11 +180,11 @@ class Bundle(object):
                 "entityId": self.idp_entity_id,
                 "singleSignOnService": {
                     "url": self.config['single_sign_on_service'],
-                    "binding": constants.BINDING_HTTP_REDIRECT,
+                    "binding": Saml2.BINDING_HTTP_REDIRECT,
                 },
                 # "singleLogoutService": {
                 #     "url": "",
-                #     "binding": constants.BINDING_HTTP_REDIRECT,
+                #     "binding": Saml2.BINDING_HTTP_REDIRECT,
                 # },
                 "x509cert": self.idp_cer_body,
             }
@@ -207,7 +208,7 @@ class Bundle(object):
         expires = created + timedelta(minutes=5)
         return render_to_string(
             'realme/opaque_token_request_tmpl.xml',
-            context = {
+            context={
                 'conf': self,
                 'created': dt_fmt(created),
                 'expires': dt_fmt(expires),
@@ -288,4 +289,3 @@ class Bundle(object):
             self.file_path('mutual_ssl_sp_key'),
         )
         return requests.post(URL_TOKEN_ISSUE, data=signed_xml, headers=headers, cert=cert)
-

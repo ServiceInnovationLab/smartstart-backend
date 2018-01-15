@@ -1,6 +1,5 @@
 import sys
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 from apps.base.models import SiteLocker
 from apps.accounts.models import UserProxy
 from apps.timeline.models import Notification

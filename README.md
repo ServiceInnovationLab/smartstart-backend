@@ -1,63 +1,44 @@
-# BOAC: Birth Of A Child
+# smartstart-backend
 
-Welcome to LEF/BOAC!
+[SmartStart](https://smartstart.services.govt.nz/) provides step-by-step information and support to
+help users access the right services for them and their baby.
 
-## Run site in virtualenv
+This repository is the back end. It uses Django, Django REST Framework and RealMe. There is a
+separate repository for `smartstart-frontend`, a React JavaScript user interface.
 
-*Following instructions assume you are on a Ubuntu Linux system*
+## Development environments
 
-Clone this repo to dir you like, I will use home dir in this doc:
+If you are a Catalyst developer, please see
+[the instructions](https://gitlab.catalyst.net.nz/lef/ops#setup-an-environment) for environment
+setup, and the section below regarding RealMe bundles.
 
-    cd ~
-    git clone git@gitlab.catalyst.net.nz:lef/backend.git
-    cd backend
+### Run site in virtualenv
 
-Now your code should be in ~/backend, and you are in it.
+*The following instructions assume you are on a Ubuntu Linux system.*
 
-Bootstrap the system for system-wide dependencies:
-
-    sudo env/bootstrap.sh
-
-Create a python3 virtualenv in a dir you like, I will use ~/env in this doc:
-
-    mkdir ~/env
-    virtualenv -p /usr/bin/python3 ~/env/py3
-
-Activate virtualenv:
-
-    # for default bash shell:
-    . ~/env/py3/bin/activate
-    # or if you use fish shell:
-    . ~/env/py3/bin/activate.fish
-
-Install python packages:
-
-    cd ~/backend
-    pip install -U -r env/requirements.txt
+Clone this repository to a directory and use the `requirements.txt` file to set up your Python 3.x
+virtual environment.
 
 Set up settings:
 
-    cp local.py.example local.py
-    vim local.py
+    cp settings/local.py.example settings/local.py
+    vim settings/local.py
 
-The default db is sqlite, for which you don't need any setup.
+The default database is sqlite, for which you don't need any setup.
 
-But if you want to use PostgreSQL, you may need to install it and override the db settings in local.py.
+Note that the Django `SECRET_KEY` setting is used everywhere for password hashing, CSRF tokens and
+session keys, among other things, so you should set it to be something unique.
 
-Create or update database tables:
+To set up the site for the first time, create the database tables with the Django `migrate` command,
+and load the test users from the fixture:
 
     python manage.py migrate --fake-initial
-
-Load pre-made test users from fixture:
-
     python manage.py loaddata test_users
 
 users:
-- admin/admin, admin
-- test/test, staff
-- joe/test, user
-- jen/test, user
-- aaron/test, user
+
+- admin/admin
+- test/test
 
 Run this site for dev:
 
@@ -67,8 +48,15 @@ Then you can visit site at:
 
     http://127.0.0.1:8000
 
-## Set up for MTS
-Decrypt gpg file for MTS bundle, refer to bundles/README.md for details.
+## RealMe integration
+
+This application relies on the RealMe service for authentication. If you are dealing with the live
+site (you are probably a Catalyst developer!) see the section below. Otherwise, please use the
+[django-realme](https://pypi.python.org/pypi/django-realme/) package.
+
+### Set up for MTS (Catalyst developers only)
+
+Decrypt gpg file for MTS bundle, refer to `bundles/README.md` for details.
 Then make sure following settings are right:
 
     BUNDLE_NAME = 'MTS'
@@ -83,30 +71,5 @@ Save page to local as a text file, then upload it to:
 
     https://mts.realme.govt.nz/logon-mts/metadataupdate
 
-Note: after uploading, it just verify the file, you need to click a second import button to finally apply it.
-
-## Run site in docker
-
-Install docker:
-
-    https://docs.docker.com/engine/installation/linux/ubuntulinux/
-
-Install docker-compose:
-
-    sudo pip install -U docker-compose
-
-Build docker image:
-
-    docker-compose build
-
-Load pre-made test users from fixture:
-
-    docker-compose run dj python manage.py loaddata test_users
-
-Run the site:
-
-    docker-compose up
-
-Then you can visit site at:
-
-    http://127.0.0.1:8000
+Note: after uploading, it just verifies the file, you need to click a second `Import` button to
+finally apply it.

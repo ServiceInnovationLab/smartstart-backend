@@ -28,7 +28,7 @@
         "first_name": "Test",
         "last_name": "SmartStart",
         "email": "",
-        "is_staff": true,
+        "is_staff": false,
         "is_active": true,
         "date_joined": "2016-07-27T22:14:52.925Z",
         "groups": [],

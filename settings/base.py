@@ -30,6 +30,7 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
+# A good example secret, should be a large and random string.
 SECRET_KEY = 'ne-oa++#f(*a=@f-5bd0$6406z8vej3@&gf(ry_d%mxd@@s9i#'
 
 # django loads templates in apps installed order,
@@ -134,10 +135,15 @@ DEFAULT_FROM_EMAIL = 'from-email'
 REPLY_TO_EMAIL = 'reply-to-email'
 RETURN_PATH_EMAIL = 'return-path-email'
 
+# Smartstart relies on the PostgreSQL JSON field type, and no longer works with SQLite.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/tmp/{}.db'.format(PROJ_NAME)
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': PROJ_NAME,
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
